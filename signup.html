@@ -212,7 +212,7 @@
             <input type="text" class="input-field" id="securityAnswer" placeholder="Security Answer" required>
             
             <button type="submit" class="enter-btn" style="margin-top: 15px;">Create Account</button>
-            <a href="login.html" class="signup-link">Already have an account? <span>Login</span></a>
+            <a href="index.html" class="signup-link">Already have an account? <span>Login</span></a>
         </form>
     </div>
 
@@ -257,7 +257,7 @@
                 localStorage.setItem(`trackcap_dashboard_${username}`, JSON.stringify(dashboardData));
 
                 alert('Account created successfully! Please login with your new credentials.');
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
         });
     </script>

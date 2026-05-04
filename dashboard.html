@@ -1053,14 +1053,14 @@
         // Check authentication
         const currentUser = sessionStorage.getItem('currentUser');
         if (!currentUser) {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         } else {
             document.getElementById('welcome-user').textContent = currentUser;
             
             document.getElementById('btn-logout').addEventListener('click', () => {
                 if (confirm('Are you sure you want to log out?')) {
                     sessionStorage.removeItem('currentUser');
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                 }
             });
             
@@ -1740,7 +1740,32 @@
                 localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
             }
 
+            const cleanupExpiredShippedOrders = () => {
+                if (!dashboardData.orders) return;
+                let ordersChanged = false;
+                const now = new Date();
+                
+                dashboardData.orders = dashboardData.orders.filter(order => {
+                    if (order.status === 'shipped' && order.deadline) {
+                        const deadlineDate = new Date(order.deadline);
+                        if (!isNaN(deadlineDate.getTime())) {
+                            deadlineDate.setHours(23, 59, 59, 999);
+                            if (now > deadlineDate) {
+                                ordersChanged = true;
+                                return false; // auto remove
+                            }
+                        }
+                    }
+                    return true;
+                });
+                
+                if (ordersChanged) {
+                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                }
+            };
+
             const renderOrdersView = () => {
+                cleanupExpiredShippedOrders();
                 const processingCountEl = document.getElementById('orders-processing-count');
                 const shippedCountEl = document.getElementById('orders-shipped-count');
                 const listContainer = document.getElementById('orders-list-container');
@@ -2169,6 +2194,7 @@
             
             const renderShippedOrders = () => {
                 if (!shippedListContainer) return;
+                cleanupExpiredShippedOrders();
                 shippedListContainer.innerHTML = '';
                 
                 let hasShipped = false;
