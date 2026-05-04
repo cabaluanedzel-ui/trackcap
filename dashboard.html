@@ -628,6 +628,7 @@
                 </svg>
                 <span>Reports</span>
             </div>
+
         </aside>
 
         <main class="content">
@@ -791,62 +792,54 @@
                         <!-- Orders injected via JS -->
                     </div>
                 </div>
-                </div>
             </div>
 
             <!-- Reports View -->
             <div id="view-reports" style="display: none; padding: 20px;">
-                <h2 style="color: #0d1b7a; margin-bottom: 20px; font-size: 2rem;">Order Fulfillment Reports</h2>
-
-                <div class="card" style="background: linear-gradient(135deg, #fceb9a, #fceb9a); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 30px;">
-                    <h3 style="color: #0d1b7a; margin-top: 0; font-size: 1.5rem; margin-bottom: 20px;">To Be Shipped (Active Orders)</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #0d1b7a; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #0d1b7a; padding-bottom: 10px;">
-                        <div>Quantity</div>
-                        <div>Item</div>
-                        <div>Customer</div>
-                        <div>Address</div>
-                        <div>MOP</div>
-                        <div>Deadline</div>
-                        <div style="width: 45px;">Action</div>
-                    </div>
+                <!-- Content Container -->
+                <div style="display: flex; gap: 40px; flex-wrap: wrap;">
                     
-                    <div id="reports-active-list" style="display: flex; flex-direction: column; gap: 15px;">
-                        <!-- Active orders injected via JS -->
+                    <!-- Left Chart (Stat Card) -->
+                    <div class="card" style="width: 480px; height: 360px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #ffffff, #eef2f5); box-shadow: 0 10px 30px rgba(13,27,122,0.1);">
+                        <h3 style="margin-top: 0; color: #0d1b7a; font-size: 1.8rem; text-align: center;">Delivery Stats</h3>
+                        
+                        <div style="display: flex; gap: 40px; margin: 20px 0; align-items: center;">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div id="reports-total-items-delivered-stat" style="font-size: 4.5rem; font-weight: 900; color: #53a948; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">0</div>
+                                <div style="font-size: 1.1rem; color: #666; font-weight: bold; text-align: center;">Items Delivered</div>
+                            </div>
+                            
+                            <div style="width: 2px; background: rgba(13,27,122,0.1); height: 80px;"></div>
+                            
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div id="reports-total-orders-delivered-stat" style="font-size: 4.5rem; font-weight: 900; color: #38a5db; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">0</div>
+                                <div style="font-size: 1.1rem; color: #666; font-weight: bold; text-align: center;">Total Orders</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 1rem; color: #999; font-style: italic; text-align: center;">This week's deliveries</div>
                     </div>
-                </div>
 
-                <div class="card" style="background: linear-gradient(135deg, #e6f4ea, #d2ecd9); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 30px;">
-                    <h3 style="color: #1abc9c; margin-top: 0; font-size: 1.5rem; margin-bottom: 20px;">Successfully Shipped (In Transit)</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #1abc9c; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #1abc9c; padding-bottom: 10px;">
-                        <div>Quantity</div>
-                        <div>Item</div>
-                        <div>Customer</div>
-                        <div>Address</div>
-                        <div>MOP</div>
-                        <div>Deadline</div>
-                        <div style="width: 45px;">Action</div>
+                    <!-- Right Chart (Vertical Bars) -->
+                    <div class="card" style="width: 480px; height: 360px;">
+                        <h3 style="margin-top: 0;">To Be Shipped Items</h3>
+                        <div style="position: relative; height: 100%; display: flex; flex-direction: column;">
+                            <div style="display: flex; flex-grow: 1; margin-left: 25px; border-left: 2px solid rgba(13,27,122,0.2); border-bottom: 2px solid rgba(13,27,122,0.2); position: relative;">
+                                <!-- Y Axis -->
+                                <div id="reports-to-be-shipped-axis-y" style="position: absolute; left: -25px; top: 0; height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.8rem; color: #0d1b7a; font-weight: bold;">
+                                    <span>0</span>
+                                </div>
+                                <!-- Bars -->
+                                <div id="reports-to-be-shipped-bars" style="display: flex; justify-content: space-around; align-items: flex-end; width: 100%; padding: 0 15px;">
+                                    <!-- Injected via JS -->
+                                </div>
+                            </div>
+                            <!-- X Axis -->
+                            <div id="reports-to-be-shipped-axis-x" style="display: flex; justify-content: space-around; margin-left: 25px; padding: 0 15px; margin-top: 10px; font-size: 0.9rem; color: #0d1b7a; font-weight: bold;">
+                                <!-- Injected via JS -->
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div id="reports-shipped-list" style="display: flex; flex-direction: column; gap: 15px;">
-                        <!-- Shipped orders injected via JS -->
-                    </div>
-                </div>
 
-                <div class="card" style="background: linear-gradient(135deg, #f2f3f4, #e2e8f0); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
-                    <h3 style="color: #555; margin-top: 0; font-size: 1.5rem; margin-bottom: 20px;">Delivered Orders (History)</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #555; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #555; padding-bottom: 10px;">
-                        <div>Quantity</div>
-                        <div>Item</div>
-                        <div>Customer</div>
-                        <div>Address</div>
-                        <div>MOP</div>
-                        <div>Deadline</div>
-                        <div style="width: 45px;">Action</div>
-                    </div>
-                    
-                    <div id="reports-delivered-list" style="display: flex; flex-direction: column; gap: 15px;">
-                        <!-- Delivered orders injected via JS -->
-                    </div>
                 </div>
             </div>
 
@@ -860,9 +853,9 @@
                     
                     <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #0d1b7a; font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e0e5d8;">
                         <div>Quantity</div>
-                        <div>Item</div>
-                        <div>Classification</div>
+                        <div>Item Details</div>
                         <div>Customer</div>
+                        <div>Address</div>
                         <div>MOP</div>
                         <div>Deadline</div>
                         <div style="width: 45px;"></div>
@@ -1219,6 +1212,7 @@
                 if (!dashboardData.activity) dashboardData.activity = [];
                 const now = new Date();
                 const timeString = now.toLocaleDateString();
+                const timestamp = now.getTime();
                 
                 let existingIndex = -1;
                 
@@ -1258,6 +1252,7 @@
                     dashboardData.activity.unshift({ 
                         text: text, 
                         date: timeString, 
+                        timestamp: timestamp,
                         type: type, 
                         itemName: payload.itemName, 
                         clsName: payload.clsName,
@@ -1340,14 +1335,41 @@
                 const notificationDot = document.getElementById('nav-notification-dot');
                 if (notificationList && notificationDot) {
                     notificationList.innerHTML = '';
-                    let alertCount = 0;
+                    let currentAlertHashes = [];
+                    
+                    // Delivered Alerts
+                    if (dashboardData.notifications) {
+                        dashboardData.notifications.forEach((notif) => {
+                            const hash = `notif_${notif.id}`;
+                            currentAlertHashes.push(hash);
+                            const alertDiv = document.createElement('div');
+                            alertDiv.className = 'alert-item';
+                            alertDiv.setAttribute('data-hash', hash);
+                            alertDiv.style.cssText = "background: #f0f4f8; border-left: 4px solid #38a5db; padding: 10px; border-radius: 4px; cursor: pointer; transition: background 0.2s;";
+                            alertDiv.onmouseover = () => alertDiv.style.background = '#e1ebf5';
+                            alertDiv.onmouseout = () => alertDiv.style.background = '#f0f4f8';
+                            alertDiv.innerHTML = `
+                                <div style="font-weight: bold; color: #38a5db; font-size: 0.9rem; margin-bottom: 3px;">Delivered</div>
+                                <div style="color: #333; font-size: 0.85rem;">${notif.message}</div>
+                            `;
+                            alertDiv.addEventListener('click', () => {
+                                document.getElementById('notification-dropdown').style.display = 'none';
+                                const tabRep = document.getElementById('tab-reports');
+                                if (tabRep) tabRep.click();
+                            });
+                            notificationList.appendChild(alertDiv);
+                        });
+                    }
                     
                     // Low Stock Alerts
                     dashboardData.inventoryItems.forEach((item) => {
                         item.classifications.forEach((cls) => {
                             if (cls.quantity <= 2) {
-                                alertCount++;
+                                const hash = `low_stock_${item.id}_${cls.name}_${cls.quantity}`;
+                                currentAlertHashes.push(hash);
                                 const alertDiv = document.createElement('div');
+                                alertDiv.className = 'alert-item';
+                                alertDiv.setAttribute('data-hash', hash);
                                 alertDiv.style.cssText = "background: #fde8e8; border-left: 4px solid #da534d; padding: 10px; border-radius: 4px; cursor: pointer; transition: background 0.2s;";
                                 alertDiv.onmouseover = () => alertDiv.style.background = '#fad4d4';
                                 alertDiv.onmouseout = () => alertDiv.style.background = '#fde8e8';
@@ -1369,8 +1391,11 @@
                     if (dashboardData.orders) {
                         dashboardData.orders.forEach((order) => {
                             if (order.status === 'processing' && order.deadline) {
-                                alertCount++;
+                                const hash = `deadline_${order.id || order.customerName}_${order.deadline}`;
+                                currentAlertHashes.push(hash);
                                 const alertDiv = document.createElement('div');
+                                alertDiv.className = 'alert-item';
+                                alertDiv.setAttribute('data-hash', hash);
                                 alertDiv.style.cssText = "background: #e6f4ea; border-left: 4px solid #1abc9c; padding: 10px; border-radius: 4px; cursor: pointer; transition: background 0.2s;";
                                 alertDiv.onmouseover = () => alertDiv.style.background = '#d2ecd9';
                                 alertDiv.onmouseout = () => alertDiv.style.background = '#e6f4ea';
@@ -1388,11 +1413,19 @@
                         });
                     }
                     
-                    if (alertCount === 0) {
+                    let hasNewAlerts = false;
+                    const readAlerts = dashboardData.readAlerts || [];
+                    currentAlertHashes.forEach(hash => {
+                        if (!readAlerts.includes(hash)) {
+                            hasNewAlerts = true;
+                        }
+                    });
+                    
+                    if (currentAlertHashes.length === 0) {
                         notificationList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic; padding: 20px;">You\'re all caught up!</div>';
                         notificationDot.style.display = 'none';
                     } else {
-                        notificationDot.style.display = 'block';
+                        notificationDot.style.display = hasNewAlerts ? 'block' : 'none';
                     }
                 }
 
@@ -1862,126 +1895,149 @@
             };
 
             const renderReportsView = () => {
-                const activeList = document.getElementById('reports-active-list');
-                const shippedList = document.getElementById('reports-shipped-list');
-                const deliveredList = document.getElementById('reports-delivered-list');
-                if (!activeList || !shippedList || !deliveredList) return;
-                
-                activeList.innerHTML = '';
-                shippedList.innerHTML = '';
-                deliveredList.innerHTML = '';
-                
-                if (dashboardData.orders && dashboardData.orders.length > 0) {
-                    dashboardData.orders.forEach((order, index) => {
-                        const row = document.createElement('div');
-                        
-                        if (order.status === 'processing') {
-                            row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center;";
-                            row.innerHTML = `
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8;">${order.quantity}</div>
-                                <div style="display: flex; gap: 10px;">
-                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 1; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.itemName}</div>
-                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 2; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.classification}</div>
-                                </div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.customerName}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.address}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.mop}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8;">${order.deadline || 'N/A'}</div>
-                                <button class="btn-report-ship" data-index="${index}" title="Mark as Shipped" style="background: #1abc9c; color: white; border: none; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: opacity 0.2s;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width: 24px; height: 24px;">
-                                        <path d="M20 6L9 17l-5-5"></path>
-                                    </svg>
-                                </button>
-                            `;
-                            row.querySelector('.btn-report-ship').onmouseover = function() { this.style.opacity = '0.8'; }
-                            row.querySelector('.btn-report-ship').onmouseout = function() { this.style.opacity = '1'; }
-                            activeList.appendChild(row);
-                        } else if (order.status === 'shipped') {
-                            row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center;";
-                            row.innerHTML = `
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8;">${order.quantity}</div>
-                                <div style="display: flex; gap: 10px;">
-                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 1; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.itemName}</div>
-                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 2; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.classification}</div>
-                                </div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.customerName}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.address}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.mop}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8;">${order.deadline || 'N/A'}</div>
-                                <button class="btn-report-deliver" data-index="${index}" title="Mark as Delivered" style="background: #3498db; color: white; border: none; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: opacity 0.2s;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width: 24px; height: 24px;">
-                                        <path d="M20 6L9 17l-5-5"></path>
-                                    </svg>
-                                </button>
-                            `;
-                            row.querySelector('.btn-report-deliver').onmouseover = function() { this.style.opacity = '0.8'; }
-                            row.querySelector('.btn-report-deliver').onmouseout = function() { this.style.opacity = '1'; }
-                            shippedList.appendChild(row);
-                        } else if (order.status === 'delivered') {
-                            row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center;";
-                            row.innerHTML = `
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; color: #888;">${order.quantity}</div>
-                                <div style="display: flex; gap: 10px;">
-                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 1; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.itemName}</div>
-                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 2; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.classification}</div>
-                                </div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.customerName}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.address}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.mop}</div>
-                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; color: #888;">${order.deadline || 'N/A'}</div>
-                                <button class="btn-report-delete" data-index="${index}" title="Delete Record" style="background: #da534d; color: white; border: none; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: opacity 0.2s;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width: 20px; height: 20px;">
-                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                    </svg>
-                                </button>
-                            `;
-                            row.querySelector('.btn-report-delete').onmouseover = function() { this.style.opacity = '0.8'; }
-                            row.querySelector('.btn-report-delete').onmouseout = function() { this.style.opacity = '1'; }
-                            deliveredList.appendChild(row);
+                const btnClearReports = document.getElementById('btn-clear-reports');
+                if (btnClearReports) {
+                    btnClearReports.onclick = () => {
+                        if (dashboardData.orders && dashboardData.orders.length > 0) {
+                            if (confirm('Are you sure you want to completely clear all order history and data in the reports? This will permanently delete all active, shipped, and delivered orders.')) {
+                                dashboardData.orders = [];
+                                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                                renderReportsView();
+                                renderOrdersView();
+                                renderShippedOrders();
+                                loadDashboardView();
+                            }
+                        } else {
+                            alert('There is no data to clear.');
                         }
-                    });
+                    };
+                }
+
+                // --- NEW LOGIC: Update "Total Items Delivered" stat ---
+                const totalItemsStatContainer = document.getElementById('reports-total-items-delivered-stat');
+                const totalOrdersStatContainer = document.getElementById('reports-total-orders-delivered-stat');
+                
+                if (totalItemsStatContainer && totalOrdersStatContainer) {
+                    let totalUnitsDelivered = 0;
+                    let totalOrdersDelivered = 0;
+                    
+                    const isThisWeek = (dateVal) => {
+                        if (!dateVal) return false;
+                        const date = new Date(dateVal);
+                        if (isNaN(date.getTime())) return false;
+                        const now = new Date();
+                        const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+                        startOfWeek.setHours(0, 0, 0, 0);
+                        const endOfWeek = new Date(startOfWeek);
+                        endOfWeek.setDate(endOfWeek.getDate() + 7);
+                        return date >= startOfWeek && date < endOfWeek;
+                    };
+                    
+                    // Track deliveries from standard order workflow
+                    if (dashboardData.orders) {
+                        dashboardData.orders.forEach(order => {
+                            if (order.status === 'delivered' && isThisWeek(order.deliveredAt)) {
+                                const qty = parseInt(order.quantity, 10) || 0;
+                                totalUnitsDelivered += qty;
+                                totalOrdersDelivered += 1;
+                            }
+                        });
+                    }
+                    
+                    // Track deliveries from manual inventory deductions (Recent Activity)
+                    if (dashboardData.activity) {
+                        dashboardData.activity.forEach(act => {
+                            if (act.type === 'qty_change' && act.diff < 0) {
+                                let actDate = act.timestamp ? new Date(act.timestamp) : new Date(act.date);
+                                if (isThisWeek(actDate)) {
+                                    totalUnitsDelivered += Math.abs(act.diff);
+                                    totalOrdersDelivered += 1; // Treat each manual deduction as a single transaction
+                                }
+                            }
+                        });
+                    }
+                    
+                    totalItemsStatContainer.textContent = totalUnitsDelivered;
+                    totalOrdersStatContainer.textContent = totalOrdersDelivered;
                 }
                 
-                if (activeList.innerHTML === '') activeList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic; padding: 20px; grid-column: 1 / -1;">No active orders to ship.</div>';
-                if (shippedList.innerHTML === '') shippedList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic; padding: 20px; grid-column: 1 / -1;">No shipped orders yet.</div>';
-                if (deliveredList.innerHTML === '') deliveredList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic; padding: 20px; grid-column: 1 / -1;">No delivered orders yet.</div>';
-
-                // Attach listeners
-                document.querySelectorAll('.btn-report-ship').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const idx = e.currentTarget.getAttribute('data-index');
-                        fulfillOrder(idx);
-                    });
-                });
+                // --- NEW LOGIC: Update "To Be Shipped Items" chart (Vertical) ---
+                const toBeShippedBarsContainer = document.getElementById('reports-to-be-shipped-bars');
+                const toBeShippedAxisY = document.getElementById('reports-to-be-shipped-axis-y');
+                const toBeShippedAxisX = document.getElementById('reports-to-be-shipped-axis-x');
                 
-                document.querySelectorAll('.btn-report-deliver').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const idx = e.currentTarget.getAttribute('data-index');
-                        deliverOrder(idx);
-                    });
-                });
-
-                document.querySelectorAll('.btn-report-delete').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const idx = e.currentTarget.getAttribute('data-index');
-                        if(confirm('Are you sure you want to delete this completed order history?')) {
-                            dashboardData.orders.splice(idx, 1);
-                            localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
-                            renderReportsView();
-                            renderShippedOrders();
-                            renderOrdersView();
-                            loadDashboardView();
-                        }
-                    });
-                });
+                if (toBeShippedBarsContainer && toBeShippedAxisY && toBeShippedAxisX) {
+                    const itemCounts = {};
+                    if (dashboardData.orders) {
+                        dashboardData.orders.forEach(order => {
+                            if (order.status === 'shipped') { // "To Be Shipped" stage
+                                const itemName = order.itemName || 'Unknown';
+                                const qty = parseInt(order.quantity, 10) || 0;
+                                itemCounts[itemName] = (itemCounts[itemName] || 0) + qty;
+                            }
+                        });
+                    }
+                    
+                    const sortedItems = Object.keys(itemCounts).map(name => ({ name, count: itemCounts[name] })).sort((a, b) => b.count - a.count);
+                    const topItems = sortedItems.slice(0, 4);
+                    
+                    const chartColors = ['#38a5db', '#53a948', '#da534d', '#d1a12e'];
+                    
+                    toBeShippedBarsContainer.innerHTML = '';
+                    toBeShippedAxisX.innerHTML = '';
+                    toBeShippedAxisY.innerHTML = '';
+                    
+                    if (topItems.length === 0) {
+                        toBeShippedBarsContainer.innerHTML = '<div style="position: absolute; top: 40%; left: 0; right: 0; text-align: center; color: #666; font-style: italic;">No items waiting to be shipped.</div>';
+                    } else {
+                        const maxCount = topItems[0].count;
+                        
+                        topItems.forEach((item, index) => {
+                            const color = chartColors[index % chartColors.length];
+                            const heightPercent = maxCount > 0 ? Math.max((item.count / maxCount) * 100, 5) : 5;
+                            
+                            // Bar
+                            const barHtml = `
+                                <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%;">
+                                    <div style="font-size: 0.8rem; font-weight: bold; color: #0d1b7a; margin-bottom: 5px;">${item.count}</div>
+                                    <div style="width: 55px; height: ${heightPercent}%; background-color: ${color}; border-radius: 5px 5px 0 0; box-shadow: inset -3px 0 5px rgba(0,0,0,0.2);"></div>
+                                </div>
+                            `;
+                            toBeShippedBarsContainer.insertAdjacentHTML('beforeend', barHtml);
+                            
+                            // X Axis label
+                            const xLabelHtml = `
+                                <span style="max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;" title="${item.name}">${item.name}</span>
+                            `;
+                            toBeShippedAxisX.insertAdjacentHTML('beforeend', xLabelHtml);
+                        });
+                        
+                        // Y Axis
+                        toBeShippedAxisY.innerHTML = `
+                            <span>${maxCount}</span>
+                            <span>${Math.ceil(maxCount * 0.75)}</span>
+                            <span>${Math.ceil(maxCount * 0.5)}</span>
+                            <span>${Math.ceil(maxCount * 0.25)}</span>
+                            <span style="transform: translateY(5px);">0</span>
+                        `;
+                    }
+                }
             };
 
             const deliverOrder = (orderIndex) => {
                 const order = dashboardData.orders[orderIndex];
                 if (confirm(`Confirm order to ${order.customerName} has been delivered?`)) {
                     dashboardData.orders[orderIndex].status = 'delivered';
-                    logActivity('text', {text: `Order delivered to ${order.customerName}`});
+                    dashboardData.orders[orderIndex].deliveredAt = new Date().toISOString();
+                    
+                    dashboardData.notifications = dashboardData.notifications || [];
+                    dashboardData.notifications.unshift({
+                        id: Date.now(),
+                        type: 'delivered',
+                        message: `${order.quantity} ${order.itemName}(s) delivered to ${order.customerName}`
+                    });
+                    if (dashboardData.notifications.length > 20) dashboardData.notifications.length = 20;
+                    
                     localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
                     renderReportsView();
                     renderShippedOrders();
@@ -2091,8 +2147,22 @@
                 const mop = prompt('Edit Method of Payment:', order.mop);
                 if (mop === null) return;
                 
-                const deadline = prompt('Edit Deadline:', order.deadline || '');
-                if (deadline === null) return;
+                let deadline = '';
+                while (true) {
+                    const input = prompt('Edit Deadline (Mandatory. Format: YYYY-MM-DD or MM/DD/YYYY):', order.deadline);
+                    if (input === null) return;
+                    if (!input.trim()) {
+                        alert("Deadline is mandatory.");
+                        continue;
+                    }
+                    const d = new Date(input);
+                    if (isNaN(d.getTime()) || !/\d{4}/.test(input)) {
+                        alert("Please provide a valid date including a 4-digit year (e.g. 2026-12-31).");
+                        continue;
+                    }
+                    deadline = input.trim();
+                    break;
+                }
                 
                 order.itemName = itemName;
                 order.classification = classification;
@@ -2162,7 +2232,23 @@
                     
                     const address = prompt('Address (optional):') || '';
                     const mop = prompt('Method of Payment (optional):') || '';
-                    const deadline = prompt('Deadline (optional, e.g. Oct 15):') || '';
+                    
+                    let deadline = '';
+                    while (true) {
+                        const input = prompt('Deadline (Mandatory. Format: YYYY-MM-DD or MM/DD/YYYY, e.g. 2026-10-15):');
+                        if (input === null) return;
+                        if (!input.trim()) {
+                            alert("Deadline is mandatory.");
+                            continue;
+                        }
+                        const d = new Date(input);
+                        if (isNaN(d.getTime()) || !/\d{4}/.test(input)) {
+                            alert("Please provide a valid date including a 4-digit year (e.g. 2026-12-31).");
+                            continue;
+                        }
+                        deadline = input.trim();
+                        break;
+                    }
                     
                     dashboardData.orders.push({
                         status: 'processing',
@@ -2206,30 +2292,42 @@
                     row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; border-bottom: 1px solid #e0e5d8; padding-bottom: 10px;";
                     
                     row.innerHTML = `
-                        <div style="background: #e2e8f0; border-radius: 10px; padding: 5px 10px; text-align: center; color: #333; font-weight: bold;">
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8);">
                             ${order.quantity}
                         </div>
-                        <div style="text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            ${order.itemName}
+                        <div style="display: flex; gap: 15px;">
+                            <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; flex: 1; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${order.itemName}
+                            </div>
+                            <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; flex: 2; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${order.classification}
+                            </div>
                         </div>
-                        <div style="text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            ${order.classification}
-                        </div>
-                        <div style="text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             ${order.customerName}
                         </div>
-                        <div style="text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            ${order.mop || '-'}
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; min-height: 42px; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.address}
                         </div>
-                        <div style="text-align: center; color: #da534d; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; min-height: 42px; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.mop}
+                        </div>
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; min-height: 42px; text-align: center; color: #da534d; font-weight: 800; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             ${order.deadline || '-'}
                         </div>
-                        <button class="btn-cancel-shipped" data-index="${index}" title="Cancel & Restore Inventory" style="background: #da534d; border: 2px solid white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                            <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; pointer-events: none;">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                        </button>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button class="btn-deliver-shipped" data-index="${index}" title="Mark as Delivered (Sold)" style="background: #53a948; border: 2px solid white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                                <svg viewBox="0 0 24 24" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; pointer-events: none;">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </button>
+                            <button class="btn-cancel-shipped" data-index="${index}" title="Cancel & Restore Inventory" style="background: #da534d; border: 2px solid white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                                <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; pointer-events: none;">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </div>
                     `;
                     shippedListContainer.appendChild(row);
                 });
@@ -2238,6 +2336,13 @@
                     shippedListContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666; font-style: italic;">No shipped orders yet.</div>';
                 }
                 
+                document.querySelectorAll('.btn-deliver-shipped').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.currentTarget.getAttribute('data-index');
+                        deliverOrder(idx);
+                    });
+                });
+
                 document.querySelectorAll('.btn-cancel-shipped').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const idx = e.currentTarget.getAttribute('data-index');
@@ -2361,6 +2466,16 @@
                     e.stopPropagation();
                     if (notificationDropdown.style.display === 'none') {
                         notificationDropdown.style.display = 'block';
+                        
+                        // Mark notifications as read
+                        const hashes = Array.from(document.querySelectorAll('.alert-item')).map(el => el.getAttribute('data-hash'));
+                        if (hashes.length > 0) {
+                            dashboardData.readAlerts = hashes;
+                            localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                        }
+                        const dot = document.getElementById('nav-notification-dot');
+                        if (dot) dot.style.display = 'none';
+                        
                     } else {
                         notificationDropdown.style.display = 'none';
                     }
