@@ -1,0 +1,2432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackCap Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #0d1b7a;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Navigation Bar */
+        .navbar {
+            background-color: #fbe696;
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .logo {
+            font-family: 'Impact', 'Arial Narrow', sans-serif;
+            font-size: 2.8rem;
+            color: #0d1b7a;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .icons-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .icon-btn svg {
+            width: 32px;
+            height: 32px;
+            fill: #0d1b7a;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #da534d;
+            border-radius: 50%;
+            border: 2px solid #fbe696;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2b3a5c;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Main Layout */
+        .main-wrapper {
+            display: flex;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 120px;
+            background-color: #fbe696;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            z-index: 20;
+            position: relative;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 25px;
+            cursor: pointer;
+            color: #0d1b7a;
+            transition: transform 0.2s;
+        }
+
+        .nav-item:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-item.active {
+            background-color: rgba(0,0,0,0.1);
+            padding: 10px;
+            border-radius: 10px;
+            width: 90%;
+        }
+
+        .nav-item svg {
+            width: 40px;
+            height: 40px;
+            fill: #0d1b7a;
+            margin-bottom: 5px;
+        }
+
+        .nav-item span {
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .sidebar-number {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: #6a6344;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Content Area */
+        .content {
+            flex-grow: 1;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Cards */
+        .card {
+            background-color: #fceea7;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: inset 0 -3px 5px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #0d1b7a;
+        }
+
+        /* Top Row Cards */
+        .top-cards {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+            height: 180px;
+        }
+
+        .stat-card {
+            flex: 1;
+        }
+
+        .stat-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+            padding: 0 10px;
+        }
+
+        .stat-icon svg {
+            width: 80px;
+            height: 80px;
+            fill: none;
+            stroke: black;
+            stroke-width: 2;
+        }
+
+        .stat-value {
+            text-align: right;
+            color: #0d1b7a;
+        }
+
+        .stat-value h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-value span {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        /* Bottom Row Cards */
+        .bottom-cards {
+            display: flex;
+            gap: 25px;
+            height: 250px;
+        }
+
+        .activity-card {
+            flex: 1.2;
+        }
+
+        .activity-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            padding-left: 10px;
+        }
+
+        .activity-list li {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .activity-list li::before {
+            content: "•";
+            margin-right: 10px;
+            color: #0d1b7a;
+        }
+
+        .chart-card {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .pie-chart {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            /* Approximating the exploded pie chart with conic-gradient */
+            background: conic-gradient(
+                #53a948 0deg 90deg, 
+                transparent 90deg 95deg,
+                #da534d 95deg 140deg, 
+                transparent 140deg 150deg,
+                #38a5db 150deg 360deg
+            );
+            box-shadow: -2px 5px 10px rgba(0,0,0,0.2);
+            transform: rotate(-10deg);
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0d1b7a;
+        }
+
+        .color-box {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+
+        .bg-green { background-color: #53a948; }
+        .bg-blue { background-color: #38a5db; }
+        .bg-red { background-color: #da534d; }
+
+        /* Inventory View */
+        .inventory-top-cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .inv-card {
+            background-color: #fceea7;
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 200px;
+            box-shadow: inset 0 -3px 5px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            position: relative;
+        }
+
+        .inv-card.active {
+            background-color: #fbe175;
+            transform: translateY(-5px);
+            border: 2px solid #0d1b7a;
+        }
+
+        .inv-card.active::after {
+            content: '';
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px;
+            border-style: solid;
+            border-color: #0d1b7a transparent transparent transparent;
+        }
+
+        .inv-card h3 {
+            font-size: 1rem;
+            color: #0d1b7a;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .inv-card .stat-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .inv-card .stat-icon svg {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .inv-card .warning-icon {
+            position: absolute;
+            top: 40px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+        }
+
+        .add-new-card {
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .add-new-card svg {
+            width: 60px;
+            height: 60px;
+            fill: #0d1b7a;
+        }
+
+        /* Inventory Details */
+        .inventory-details {
+            padding: 30px;
+            min-height: 250px;
+        }
+
+        .details-cols {
+            display: flex;
+            gap: 80px;
+        }
+
+        .col-classification, .col-quantity {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .details-cols h3 {
+            color: #0d1b7a;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .class-list, .qty-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .class-list li {
+            font-size: 1.2rem;
+            color: #0d1b7a;
+            display: flex;
+            align-items: center;
+            height: 35px;
+        }
+
+        .class-list li::before {
+            content: "•";
+            margin-right: 10px;
+        }
+
+        .qty-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 35px;
+        }
+
+        .qty-pill {
+            background: linear-gradient(to bottom, #f4f4f4, #d1d5db);
+            color: #0d1b7a;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 80px;
+            text-align: center;
+            border: 1px solid #ccc;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .qty-pill::-webkit-outer-spin-button,
+        .qty-pill::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .qty-pill[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .qty-btn {
+            background-color: transparent;
+            border: 2px solid #000;
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+
+        .qty-btn:active {
+            transform: scale(0.9);
+        }
+
+        .btn-add-new {
+            background: linear-gradient(to bottom, #f4f4f4, #d1d5db);
+            color: #0d1b7a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            align-self: flex-start;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        
+        .btn-add-new:active {
+            transform: scale(0.95);
+        }
+
+        .btn-remove-item {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #da534d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .inv-card:hover .btn-remove-item {
+            display: flex;
+        }
+
+        .btn-remove-class {
+            border-color: #da534d !important;
+            color: #da534d !important;
+            margin-left: 10px;
+        }
+
+        .low-stock-warn {
+            color: #da534d !important;
+            border-color: #da534d !important;
+            background: #ffebe9 !important;
+        }
+
+        /* Decorative Elements */
+        .wave-container {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 600px;
+            height: 600px;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .wave-bg {
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 150%;
+            height: 150%;
+            opacity: 0.6;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">TrackCap</div>
+        <div class="nav-right">
+            <div class="icons-group">
+                <!-- Bell icon -->
+                <div style="position: relative;">
+                    <button class="icon-btn" id="btn-notifications" style="position: relative;">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z"/>
+                        </svg>
+                        <div class="notification-dot" id="nav-notification-dot" style="display: none;"></div>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div id="notification-dropdown" style="display: none; position: absolute; top: 120%; right: -10px; width: 340px; background: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 2000; padding: 15px; border: 1px solid #e0e5d8;">
+                        <h3 style="color: #0d1b7a; margin-top: 0; margin-bottom: 10px; font-size: 1.1rem; padding-bottom: 10px; border-bottom: 1px solid #eee;">Notifications</h3>
+                        <div id="notification-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 350px; overflow-y: auto;">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+                <!-- User Profile Icon -->
+                <button class="icon-btn" id="btn-edit-profile" title="Edit Profile" style="display: flex; align-items: center; gap: 10px;">
+                    <span id="welcome-user" style="font-size: 1.1rem; font-weight: 700;"></span>
+                    <div id="nav-avatar-container" style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #0d1b7a; display: flex; align-items: center; justify-content: center; background: #e0e5d8;">
+                        <svg id="nav-avatar-fallback" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 28px; height: 28px;">
+                            <circle cx="12" cy="12" r="10" stroke="#000"></circle>
+                            <circle cx="12" cy="10" r="3" fill="#000"></circle>
+                            <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662" fill="#000"></path>
+                        </svg>
+                        <img id="nav-avatar-img" src="" alt="Profile" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                </button>
+                <!-- Logout Button -->
+                <button class="icon-btn" id="btn-logout" title="Logout" style="display: flex; align-items: center; gap: 5px; margin-left: 10px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#da534d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span style="color: #da534d; font-weight: 700; font-size: 1rem;">Logout</span>
+                </button>
+            </div>
+            <div class="nav-links">
+                <a href="#" id="nav-about">About</a>
+                <a href="#" id="nav-contact">Contact Us</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <aside class="sidebar">
+            <div class="nav-item active" id="tab-dashboard">
+                <!-- Home / Dashboard -->
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" stroke="#000" stroke-width="1"/>
+                </svg>
+                <span>DashBoard</span>
+            </div>
+            <div class="nav-item" id="tab-inventory">
+                <!-- Inventory Boxes -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5">
+                    <path d="M12 3L20 7.5L12 12L4 7.5L12 3Z"/>
+                    <path d="M4 12L12 16.5L20 12"/>
+                    <path d="M4 16.5L12 21L20 16.5"/>
+                    <path d="M4 7.5V16.5"/>
+                    <path d="M20 7.5V16.5"/>
+                    <path d="M12 12V21"/>
+                </svg>
+                <span>Inventory</span>
+            </div>
+            <div class="nav-item" id="tab-orders">
+                <!-- Orders -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15"/>
+                    <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V5H9V5Z"/>
+                    <circle cx="12" cy="14" r="3"/>
+                    <path d="M14 16L17 19"/>
+                </svg>
+                <span>Orders</span>
+            </div>
+            <div class="nav-item" id="tab-reports">
+                <!-- Reports -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5">
+                    <path d="M3 21H21"/>
+                    <path d="M5 21V14"/>
+                    <path d="M11 21V10"/>
+                    <path d="M17 21V5"/>
+                    <path d="M3 7L9 11L15 5L21 9"/>
+                </svg>
+                <span>Reports</span>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div id="view-dashboard">
+                <div class="top-cards">
+                <div class="card stat-card">
+                    <h3>Total Inventory</h3>
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <!-- Cap icon -->
+                            <svg viewBox="0 0 100 100">
+                                <path d="M10 70 Q 50 80 90 70 Q 95 65 85 60 Q 50 70 15 60 Q 5 65 10 70 Z" fill="#fff" stroke="#000" stroke-width="2"/>
+                                <path d="M20 62 C 20 20, 80 20, 80 62 Z" fill="#fff" stroke="#000" stroke-width="2"/>
+                                <path d="M50 25 V 62" stroke="#000" stroke-width="1" stroke-dasharray="2,2"/>
+                                <circle cx="50" cy="25" r="3" fill="#000"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value">
+                            <h2 id="total-inventory">142</h2>
+                            <span>Items</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card stat-card" id="card-low-stock" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" title="View Low Stock Items">
+                    <h3>Low Stocks</h3>
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <!-- Warning Triangle icon -->
+                            <svg viewBox="0 0 24 24" stroke-width="2">
+                                <path d="M12 2L2 20H22L12 2Z" fill="none" stroke="#000"/>
+                                <line x1="12" y1="9" x2="12" y2="15" stroke="#000" stroke-width="2"/>
+                                <circle cx="12" cy="18" r="1" fill="#000"/>
+                            </svg>
+                        </div>
+                        <div class="stat-value">
+                            <h2 id="low-stocks">2</h2>
+                            <span>Class</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <h3>Active Orders</h3>
+                    <div class="stat-content">
+                        <div class="stat-icon">
+                            <!-- Shopping Cart icon -->
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-value">
+                            <h2 id="active-orders">16</h2>
+                            <span>Orders</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-cards">
+                <div class="card activity-card">
+                    <h3>Recent Inventory Activity</h3>
+                    <ul class="activity-list" id="activity-list">
+                        <!-- Activity injected via JS -->
+                    </ul>
+                </div>
+                <div class="card chart-card">
+                    <div class="pie-chart"></div>
+                    <div class="chart-legend">
+                        <div class="legend-item"><span class="color-box bg-green"></span> Snapback</div>
+                        <div class="legend-item"><span class="color-box bg-blue"></span> Trucker</div>
+                        <div class="legend-item"><span class="color-box bg-red"></span> Closed</div>
+                    </div>
+                </div>
+            </div>
+
+            </div> <!-- End view-dashboard -->
+
+            <div id="view-inventory" style="display: none;">
+                <div class="inventory-top-cards" id="inventory-cards-container">
+                    <!-- Dynamic cards will go here -->
+                </div>
+                
+                <div class="inventory-details card" id="inventory-details" style="display: none;">
+                    <div class="details-cols">
+                        <div class="col-classification">
+                            <h3>Classification</h3>
+                            <ul class="class-list" id="class-list">
+                                <!-- Dynamic classes will go here -->
+                            </ul>
+                            <button class="btn-add-new" id="btn-add-class">Add New Classification</button>
+                        </div>
+                        <div class="col-quantity">
+                            <h3>Quantity</h3>
+                            <ul class="qty-list" id="qty-list">
+                                <!-- Dynamic quantities will go here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-orders" style="display: none; padding: 20px;">
+                <div class="top-cards" style="justify-content: flex-start; gap: 40px; margin-bottom: 20px;">
+                    <div class="card stat-card" style="background: linear-gradient(135deg, #af9e67, #dac787); min-width: 300px; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        <h3 style="color: #0d1b7a; font-size: 1.4rem;">Processing</h3>
+                        <div class="stat-content">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 100 100" style="width: 80px; height: 80px;">
+                                    <path d="M10 70 Q 50 80 90 70 Q 95 65 85 60 Q 50 70 15 60 Q 5 65 10 70 Z" fill="#fff" stroke="#000" stroke-width="2"/>
+                                    <path d="M20 62 C 20 20, 80 20, 80 62 Z" fill="#fff" stroke="#000" stroke-width="2"/>
+                                    <path d="M50 25 V 62" stroke="#000" stroke-width="1" stroke-dasharray="2,2"/>
+                                    <circle cx="50" cy="25" r="3" fill="#000"/>
+                                </svg>
+                            </div>
+                            <div class="stat-value" style="text-align: center;">
+                                <h2 id="orders-processing-count" style="font-size: 3.5rem; font-weight: 700; color: #0d1b7a; margin-bottom: -5px;">0</h2>
+                                <span style="color: #0d1b7a; font-weight: 700; font-size: 1.1rem;">Orders</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="card-shipped" class="card stat-card" style="background: linear-gradient(135deg, #fbe175, #dfc776); min-width: 300px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        <h3 style="color: #0d1b7a; font-size: 1.4rem;">To be shipped</h3>
+                        <div class="stat-content">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" style="width: 70px; height: 70px;">
+                                    <circle cx="9" cy="21" r="2" fill="#000"></circle>
+                                    <circle cx="20" cy="21" r="2" fill="#000"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <line x1="6" y1="6" x2="23" y2="6"></line>
+                                    <line x1="8" y1="10" x2="21" y2="10"></line>
+                                    <line x1="10" y1="14" x2="19" y2="14"></line>
+                                </svg>
+                            </div>
+                            <div class="stat-value" style="text-align: center;">
+                                <h2 id="orders-shipped-count" style="font-size: 3.5rem; font-weight: 700; color: #0d1b7a; margin-bottom: -5px;">0</h2>
+                                <span style="color: #0d1b7a; font-weight: 700; font-size: 1.1rem;">Orders</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px;">
+                    <h2 style="color: #0d1b7a;">Active Orders</h2>
+                    <button id="btn-add-order" style="background: #0d1b7a; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: bold; cursor: pointer;">+ Add New Order</button>
+                </div>
+
+                <div class="card" style="background: linear-gradient(135deg, #fceb9a, #fceb9a); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                    <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #0d1b7a; font-size: 1.2rem; margin-bottom: 20px;">
+                        <div>Quantity</div>
+                        <div>Classification</div>
+                        <div>Name</div>
+                        <div>Address</div>
+                        <div>MOP</div>
+                        <div>Deadline</div>
+                        <div style="width: 45px;"></div>
+                    </div>
+                    
+                    <div id="orders-list-container" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Orders injected via JS -->
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div id="view-reports" style="display: none; padding: 20px;">
+                <h2 style="color: #0d1b7a; margin-bottom: 20px; font-size: 2rem;">Order Fulfillment Reports</h2>
+
+                <div class="card" style="background: linear-gradient(135deg, #fceb9a, #fceb9a); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 30px;">
+                    <h3 style="color: #0d1b7a; margin-top: 0; font-size: 1.5rem; margin-bottom: 20px;">To Be Shipped (Active Orders)</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #0d1b7a; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #0d1b7a; padding-bottom: 10px;">
+                        <div>Quantity</div>
+                        <div>Item</div>
+                        <div>Customer</div>
+                        <div>Address</div>
+                        <div>MOP</div>
+                        <div>Deadline</div>
+                        <div style="width: 45px;">Action</div>
+                    </div>
+                    
+                    <div id="reports-active-list" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Active orders injected via JS -->
+                    </div>
+                </div>
+
+                <div class="card" style="background: linear-gradient(135deg, #e6f4ea, #d2ecd9); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 30px;">
+                    <h3 style="color: #1abc9c; margin-top: 0; font-size: 1.5rem; margin-bottom: 20px;">Successfully Shipped (In Transit)</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #1abc9c; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #1abc9c; padding-bottom: 10px;">
+                        <div>Quantity</div>
+                        <div>Item</div>
+                        <div>Customer</div>
+                        <div>Address</div>
+                        <div>MOP</div>
+                        <div>Deadline</div>
+                        <div style="width: 45px;">Action</div>
+                    </div>
+                    
+                    <div id="reports-shipped-list" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Shipped orders injected via JS -->
+                    </div>
+                </div>
+
+                <div class="card" style="background: linear-gradient(135deg, #f2f3f4, #e2e8f0); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                    <h3 style="color: #555; margin-top: 0; font-size: 1.5rem; margin-bottom: 20px;">Delivered Orders (History)</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #555; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid #555; padding-bottom: 10px;">
+                        <div>Quantity</div>
+                        <div>Item</div>
+                        <div>Customer</div>
+                        <div>Address</div>
+                        <div>MOP</div>
+                        <div>Deadline</div>
+                        <div style="width: 45px;">Action</div>
+                    </div>
+                    
+                    <div id="reports-delivered-list" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Delivered orders injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipped Orders Modal -->
+            <div id="modal-shipped" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
+                <div style="background: #fff; border-radius: 15px; padding: 30px; width: 80%; max-width: 1000px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #0d1b7a; margin: 0;">Shipped Orders Overview</h2>
+                        <button id="btn-close-shipped-modal" style="background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #da534d; line-height: 1;">&times;</button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; text-align: center; font-weight: 800; color: #0d1b7a; font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e0e5d8;">
+                        <div>Quantity</div>
+                        <div>Item</div>
+                        <div>Classification</div>
+                        <div>Customer</div>
+                        <div>MOP</div>
+                        <div>Deadline</div>
+                        <div style="width: 45px;"></div>
+                    </div>
+                    
+                    <div id="shipped-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Shipped orders injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Modal -->
+            <div id="modal-lowstock" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
+                <div style="background: #fff; border-radius: 15px; padding: 30px; width: 80%; max-width: 800px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #0d1b7a; margin: 0;">Low Stock Alerts</h2>
+                        <button id="btn-close-lowstock-modal" style="background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #da534d; line-height: 1;">&times;</button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 20px; align-items: center; text-align: left; font-weight: 800; color: #0d1b7a; font-size: 1.1rem; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e0e5d8;">
+                        <div>Item Name</div>
+                        <div>Classification</div>
+                        <div style="text-align: center;">Remaining Stock</div>
+                    </div>
+                    
+                    <div id="lowstock-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Low stock injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="wave-container">
+                <svg class="wave-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="none" stroke="#a1b0a6" stroke-width="0.3" d="M 0 200 Q 50 150 100 100 T 200 0"></path>
+                    <path fill="none" stroke="#a1b0a6" stroke-width="0.3" d="M 10 200 Q 60 140 110 90 T 200 10"></path>
+                    <path fill="none" stroke="#a1b0a6" stroke-width="0.3" d="M 20 200 Q 70 130 120 80 T 200 20"></path>
+                    <path fill="none" stroke="#a1b0a6" stroke-width="0.3" d="M 30 200 Q 80 120 130 70 T 200 30"></path>
+                    <path fill="none" stroke="#a1b0a6" stroke-width="0.3" d="M 40 200 Q 90 110 140 60 T 200 40"></path>
+                    <path fill="none" stroke="#a1b0a6" stroke-width="0.3" d="M -10 200 Q 40 160 90 110 T 200 -10"></path>
+                    <path fill="none" stroke="#a1b0a6" stroke-width="0.3" d="M -20 200 Q 30 170 80 120 T 200 -20"></path>
+                    
+                    <path fill="none" stroke="#ccdfc2" stroke-width="0.2" d="M 0 180 Q 80 160 120 80 T 180 0"></path>
+                    <path fill="none" stroke="#ccdfc2" stroke-width="0.2" d="M 10 190 Q 90 170 130 90 T 190 10"></path>
+                    <path fill="none" stroke="#ccdfc2" stroke-width="0.2" d="M 20 200 Q 100 180 140 100 T 200 20"></path>
+                    
+                    <path fill="none" stroke="#e0e5d8" stroke-width="0.1" d="M 50 200 Q 120 150 160 100 T 200 80"></path>
+                    <path fill="none" stroke="#e0e5d8" stroke-width="0.1" d="M 60 200 Q 130 160 170 110 T 200 90"></path>
+                    <path fill="none" stroke="#e0e5d8" stroke-width="0.1" d="M 70 200 Q 140 170 180 120 T 200 100"></path>
+                </svg>
+            </div>
+            <!-- Profile Settings Modal -->
+            <div id="modal-profile" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
+                <div style="background: #fff; border-radius: 15px; padding: 30px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #0d1b7a; margin: 0;">Profile Settings</h2>
+                        <button id="btn-close-profile-modal" style="background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #da534d; line-height: 1;">&times;</button>
+                    </div>
+                    
+                    <!-- Avatar Upload -->
+                    <div style="margin-bottom: 20px; position: relative; display: inline-block;">
+                        <input type="file" id="profile-image-input" accept="image/*" style="display: none;">
+                        <div id="profile-avatar-preview" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #0d1b7a; background: #e0e5d8; overflow: hidden; margin: 0 auto; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="document.getElementById('profile-image-input').click()" title="Click to upload new photo (Max 10MB)">
+                            <svg id="profile-avatar-fallback" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 60px; height: 60px;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="10" r="3"></circle>
+                                <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
+                            </svg>
+                            <img id="profile-avatar-img" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">Click image to upload</div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
+                        <div>
+                            <label style="color: #0d1b7a; font-weight: bold; font-size: 0.9rem;">Full Name</label>
+                            <input type="text" id="profile-name-input" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; margin-top: 5px;">
+                        </div>
+                        <div>
+                            <label style="color: #0d1b7a; font-weight: bold; font-size: 0.9rem;">Email Address</label>
+                            <input type="email" id="profile-email-input" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; margin-top: 5px;">
+                        </div>
+                        <div>
+                            <label style="color: #0d1b7a; font-weight: bold; font-size: 0.9rem;">Phone Number</label>
+                            <input type="tel" id="profile-phone-input" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; margin-top: 5px;">
+                        </div>
+                    </div>
+                    
+                    <button id="btn-save-profile" style="background: #0d1b7a; color: white; border: none; border-radius: 8px; padding: 12px 20px; font-weight: bold; font-size: 1.1rem; width: 100%; margin-top: 25px; cursor: pointer;">Save Profile</button>
+                </div>
+
+            </div>
+            
+            <!-- About Us Modal -->
+            <div id="modal-about" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center;">
+                <div style="background: #fff; border-radius: 15px; padding: 40px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; position: relative;">
+                    <button id="btn-close-about-modal" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #da534d; line-height: 1;">&times;</button>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h2 style="color: #0d1b7a; margin: 0; font-size: 2.5rem; letter-spacing: 2px;">CDM CPE</h2>
+                        <div style="color: #666; font-size: 1.1rem; margin-top: 5px; font-style: italic;">Powered by TrackCap Inventory System</div>
+                    </div>
+                    
+                    <div style="background: #f4f6f8; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #e0e5d8;">
+                        <h3 style="color: #333; margin-top: 0; font-size: 1.2rem; border-bottom: 2px solid #0d1b7a; padding-bottom: 10px; display: inline-block;">Development Team</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #0d1b7a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold;">E</div>
+                                <div>
+                                    <div style="font-weight: 800; color: #0d1b7a; font-size: 1rem;">Edzel Cabaluan</div>
+                                    <div style="color: #666; font-size: 0.8rem; font-weight: bold;">Developer</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #1abc9c; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold;">J</div>
+                                <div>
+                                    <div style="font-weight: 800; color: #0d1b7a; font-size: 1rem;">John Carpio</div>
+                                    <div style="color: #666; font-size: 0.8rem; font-weight: bold;">Developer</div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #f39c12; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold;">W</div>
+                                <div>
+                                    <div style="font-weight: 800; color: #0d1b7a; font-size: 1rem;">Warren Lara</div>
+                                    <div style="color: #666; font-size: 0.8rem; font-weight: bold;">Developer</div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold;">Z</div>
+                                <div>
+                                    <div style="font-weight: 800; color: #0d1b7a; font-size: 1rem;">Zeal Reynante</div>
+                                    <div style="color: #666; font-size: 0.8rem; font-weight: bold;">Developer</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p style="color: #555; font-size: 0.95rem; line-height: 1.5;">
+                        TrackCap is a state-of-the-art inventory management solution designed specifically for EzCaps to streamline orders, track products, and monitor low stock alerts in real-time.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Contact Us Modal -->
+            <div id="modal-contact" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center;">
+                <div style="background: #fff; border-radius: 15px; padding: 40px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; position: relative;">
+                    <button id="btn-close-contact-modal" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #da534d; line-height: 1;">&times;</button>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="color: #0d1b7a; margin: 0; font-size: 2.2rem; letter-spacing: 1px;">Contact Us</h2>
+                        <div style="color: #666; font-size: 1.05rem; margin-top: 5px;">We'd love to hear from you!</div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 20px; text-align: left; background: #f9fbfd; padding: 25px; border-radius: 12px; border: 1px solid #e0e5d8;">
+                        <!-- Email -->
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e5d8; display: flex; align-items: center; justify-content: center;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#0d1b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.85rem; color: #666; font-weight: bold; text-transform: uppercase;">Email</div>
+                                <div style="font-size: 1.1rem; color: #333; font-weight: 600;">its.warrenlara@gmail.com</div>
+                            </div>
+                        </div>
+
+                        <!-- Instagram -->
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e5d8; display: flex; align-items: center; justify-content: center;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#0d1b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.85rem; color: #666; font-weight: bold; text-transform: uppercase;">Instagram</div>
+                                <div style="font-size: 1.1rem; color: #333; font-weight: 600;">@war_rl</div>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e5d8; display: flex; align-items: center; justify-content: center;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#0d1b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.85rem; color: #666; font-weight: bold; text-transform: uppercase;">Phone Number</div>
+                                <div style="font-size: 1.1rem; color: #333; font-weight: 600;">09383674285</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check authentication
+        const currentUser = sessionStorage.getItem('currentUser');
+        if (!currentUser) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('welcome-user').textContent = currentUser;
+            
+            document.getElementById('btn-logout').addEventListener('click', () => {
+                if (confirm('Are you sure you want to log out?')) {
+                    sessionStorage.removeItem('currentUser');
+                    window.location.href = 'login.html';
+                }
+            });
+            
+            let dashboardData = JSON.parse(localStorage.getItem(`trackcap_dashboard_${currentUser}`) || '{}');
+
+            // Fallback for older accounts without inventoryItems
+            if (!dashboardData.inventoryItems) {
+                dashboardData.inventoryItems = [
+                    {
+                        id: "trucker", name: "Trucker cap", lowStock: false,
+                        classifications: [{ name: "Blue", quantity: 5 }, { name: "White", quantity: 12 }]
+                    }
+                ];
+                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+            }
+            
+            // --- Profile Logic ---
+            if (!dashboardData.profile) {
+                dashboardData.profile = { fullName: currentUser, email: '', phone: '', avatarBase64: '' };
+            }
+            
+            const btnEditProfile = document.getElementById('btn-edit-profile');
+            const modalProfile = document.getElementById('modal-profile');
+            const btnCloseProfileModal = document.getElementById('btn-close-profile-modal');
+            const profileImageInput = document.getElementById('profile-image-input');
+            const profileNameInput = document.getElementById('profile-name-input');
+            const profileEmailInput = document.getElementById('profile-email-input');
+            const profilePhoneInput = document.getElementById('profile-phone-input');
+            const btnSaveProfile = document.getElementById('btn-save-profile');
+            
+            const navAvatarFallback = document.getElementById('nav-avatar-fallback');
+            const navAvatarImg = document.getElementById('nav-avatar-img');
+            const profileAvatarFallback = document.getElementById('profile-avatar-fallback');
+            const profileAvatarImg = document.getElementById('profile-avatar-img');
+            const welcomeUser = document.getElementById('welcome-user');
+            
+            let currentAvatarBase64 = dashboardData.profile.avatarBase64;
+            
+            const updateProfileUI = () => {
+                const name = dashboardData.profile.fullName || currentUser;
+                welcomeUser.textContent = name;
+                
+                if (dashboardData.profile.avatarBase64) {
+                    navAvatarImg.src = dashboardData.profile.avatarBase64;
+                    navAvatarImg.style.display = 'block';
+                    navAvatarFallback.style.display = 'none';
+                    
+                    if (profileAvatarImg) {
+                        profileAvatarImg.src = dashboardData.profile.avatarBase64;
+                        profileAvatarImg.style.display = 'block';
+                        profileAvatarFallback.style.display = 'none';
+                    }
+                } else {
+                    navAvatarImg.style.display = 'none';
+                    navAvatarFallback.style.display = 'block';
+                    
+                    if (profileAvatarImg) {
+                        profileAvatarImg.style.display = 'none';
+                        profileAvatarFallback.style.display = 'block';
+                    }
+                }
+            };
+            
+            updateProfileUI(); // Call on load
+            
+            if (btnEditProfile && modalProfile) {
+                btnEditProfile.addEventListener('click', () => {
+                    profileNameInput.value = dashboardData.profile.fullName || currentUser;
+                    profileEmailInput.value = dashboardData.profile.email || '';
+                    profilePhoneInput.value = dashboardData.profile.phone || '';
+                    currentAvatarBase64 = dashboardData.profile.avatarBase64 || '';
+                    modalProfile.style.display = 'flex';
+                });
+                
+                btnCloseProfileModal.addEventListener('click', () => {
+                    modalProfile.style.display = 'none';
+                });
+                
+                // Close modal on outside click
+                window.addEventListener('click', (e) => {
+                    if (e.target === modalProfile) {
+                        modalProfile.style.display = 'none';
+                    }
+                });
+                
+                // Handle Image Upload and Compression
+                profileImageInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // 10MB limit check
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('Image must be less than 10MB.');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            // Compress image via Canvas to avoid localStorage quota issues
+                            const canvas = document.createElement('canvas');
+                            const MAX_WIDTH = 300;
+                            const MAX_HEIGHT = 300;
+                            let width = img.width;
+                            let height = img.height;
+                            
+                            if (width > height) {
+                                if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                }
+                            } else {
+                                if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height;
+                                    height = MAX_HEIGHT;
+                                }
+                            }
+                            canvas.width = width;
+                            canvas.height = height;
+                            
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            // Compress to JPEG with 80% quality
+                            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                            currentAvatarBase64 = dataUrl;
+                            
+                            profileAvatarImg.src = dataUrl;
+                            profileAvatarImg.style.display = 'block';
+                            profileAvatarFallback.style.display = 'none';
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                btnSaveProfile.addEventListener('click', () => {
+                    dashboardData.profile.fullName = profileNameInput.value.trim();
+                    dashboardData.profile.email = profileEmailInput.value.trim();
+                    dashboardData.profile.phone = profilePhoneInput.value.trim();
+                    dashboardData.profile.avatarBase64 = currentAvatarBase64;
+                    
+                    try {
+                        localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                        updateProfileUI();
+                        modalProfile.style.display = 'none';
+                    } catch (e) {
+                        alert('Storage error: The image might still be too large to save offline. Try a smaller image.');
+                    }
+                });
+            }
+
+            // Function to log recent activity with stacking
+            function logActivity(type, payload) {
+                if (!dashboardData.activity) dashboardData.activity = [];
+                const now = new Date();
+                const timeString = now.toLocaleDateString();
+                
+                let existingIndex = -1;
+                
+                // Stack quantity changes for the same item and class on the same day
+                if (type === 'qty_change') {
+                    existingIndex = dashboardData.activity.findIndex(act => 
+                        act.date === timeString && 
+                        act.type === 'qty_change' && 
+                        act.itemName === payload.itemName && 
+                        act.clsName === payload.clsName
+                    );
+                }
+
+                if (existingIndex !== -1) {
+                    let act = dashboardData.activity[existingIndex];
+                    act.diff += payload.diff;
+                    
+                    if (act.diff === 0) {
+                        dashboardData.activity.splice(existingIndex, 1);
+                    } else {
+                        let sign = act.diff > 0 ? '+' : '-';
+                        act.text = `${sign} ${Math.abs(act.diff)} ${act.itemName} (${act.clsName})`;
+                        
+                        // Move to top
+                        dashboardData.activity.splice(existingIndex, 1);
+                        dashboardData.activity.unshift(act);
+                    }
+                } else {
+                    let text = '';
+                    if (type === 'qty_change') {
+                        let sign = payload.diff > 0 ? '+' : '-';
+                        text = `${sign} ${Math.abs(payload.diff)} ${payload.itemName} (${payload.clsName})`;
+                    } else {
+                        text = payload.text;
+                    }
+                    
+                    dashboardData.activity.unshift({ 
+                        text: text, 
+                        date: timeString, 
+                        type: type, 
+                        itemName: payload.itemName, 
+                        clsName: payload.clsName,
+                        diff: payload.diff
+                    });
+                }
+                
+                if (dashboardData.activity.length > 5) {
+                    dashboardData.activity = dashboardData.activity.slice(0, 5);
+                }
+                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+            }
+
+            // Function to calculate totals dynamically
+            function getCardTotal(item) {
+                return item.classifications.reduce((sum, c) => sum + c.quantity, 0);
+            }
+
+            // Load Dashboard View Data
+            function loadDashboardView() {
+                // Update total inventory dynamically based on items
+                let dynamicTotal = 0;
+                let lowStocksCount = 0;
+                
+                // For the pie chart
+                const chartColors = ['#38a5db', '#53a948', '#da534d', '#fbe175', '#a569bd', '#e67e22', '#1abc9c'];
+                let chartData = [];
+
+                dashboardData.inventoryItems.forEach((item, idx) => {
+                    let itemTotal = getCardTotal(item);
+                    dynamicTotal += itemTotal;
+                    
+                    // Dynamic low stock calculation (Item level for the warning icon)
+                    item.lowStock = item.classifications.some(c => c.quantity <= 2);
+                    
+                    // Count total low stock classifications for the dashboard
+                    item.classifications.forEach(c => {
+                        if (c.quantity <= 2) {
+                            lowStocksCount++;
+                        }
+                    });
+                    
+                    if (itemTotal > 0) {
+                        chartData.push({
+                            name: item.name,
+                            total: itemTotal,
+                            color: chartColors[idx % chartColors.length]
+                        });
+                    }
+                });
+
+                // Calculate active orders dynamically from the orders array
+                let dynamicActiveOrders = 0;
+                if (dashboardData.orders) {
+                    dynamicActiveOrders = dashboardData.orders.filter(o => o.status === 'processing').length;
+                }
+
+                // Sync to local database
+                dashboardData.totalInventory = dynamicTotal;
+                dashboardData.lowStocks = lowStocksCount;
+                dashboardData.activeOrders = dynamicActiveOrders;
+                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+
+                document.getElementById('total-inventory').textContent = dashboardData.totalInventory;
+                document.getElementById('low-stocks').textContent = dashboardData.lowStocks;
+                document.getElementById('active-orders').textContent = dashboardData.activeOrders;
+
+                const activityList = document.getElementById('activity-list');
+                activityList.innerHTML = ''; 
+                if (dashboardData.activity) {
+                    dashboardData.activity.forEach(act => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span>${act.text}</span> <span style="font-weight:400; font-size:1rem;">${act.date}</span>`;
+                        activityList.appendChild(li);
+                    });
+                }
+
+                // Generate Notifications
+                const notificationList = document.getElementById('notification-list');
+                const notificationDot = document.getElementById('nav-notification-dot');
+                if (notificationList && notificationDot) {
+                    notificationList.innerHTML = '';
+                    let alertCount = 0;
+                    
+                    // Low Stock Alerts
+                    dashboardData.inventoryItems.forEach((item) => {
+                        item.classifications.forEach((cls) => {
+                            if (cls.quantity <= 2) {
+                                alertCount++;
+                                const alertDiv = document.createElement('div');
+                                alertDiv.style.cssText = "background: #fde8e8; border-left: 4px solid #da534d; padding: 10px; border-radius: 4px; cursor: pointer; transition: background 0.2s;";
+                                alertDiv.onmouseover = () => alertDiv.style.background = '#fad4d4';
+                                alertDiv.onmouseout = () => alertDiv.style.background = '#fde8e8';
+                                alertDiv.innerHTML = `
+                                    <div style="font-weight: bold; color: #da534d; font-size: 0.9rem; margin-bottom: 3px;">Low Stock Alert</div>
+                                    <div style="color: #333; font-size: 0.85rem;">Only ${cls.quantity} left of ${item.name} (${cls.name})</div>
+                                `;
+                                alertDiv.addEventListener('click', () => {
+                                    document.getElementById('notification-dropdown').style.display = 'none';
+                                    const tabInv = document.getElementById('tab-inventory');
+                                    if (tabInv) tabInv.click();
+                                });
+                                notificationList.appendChild(alertDiv);
+                            }
+                        });
+                    });
+                    
+                    // Deadline Alerts
+                    if (dashboardData.orders) {
+                        dashboardData.orders.forEach((order) => {
+                            if (order.status === 'processing' && order.deadline) {
+                                alertCount++;
+                                const alertDiv = document.createElement('div');
+                                alertDiv.style.cssText = "background: #e6f4ea; border-left: 4px solid #1abc9c; padding: 10px; border-radius: 4px; cursor: pointer; transition: background 0.2s;";
+                                alertDiv.onmouseover = () => alertDiv.style.background = '#d2ecd9';
+                                alertDiv.onmouseout = () => alertDiv.style.background = '#e6f4ea';
+                                alertDiv.innerHTML = `
+                                    <div style="font-weight: bold; color: #1abc9c; font-size: 0.9rem; margin-bottom: 3px;">Deadline: ${order.deadline}</div>
+                                    <div style="color: #333; font-size: 0.85rem;">Pending: ${order.quantity} ${order.itemName} for ${order.customerName}</div>
+                                `;
+                                alertDiv.addEventListener('click', () => {
+                                    document.getElementById('notification-dropdown').style.display = 'none';
+                                    const tabOrd = document.getElementById('tab-orders');
+                                    if (tabOrd) tabOrd.click();
+                                });
+                                notificationList.appendChild(alertDiv);
+                            }
+                        });
+                    }
+                    
+                    if (alertCount === 0) {
+                        notificationList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic; padding: 20px;">You\'re all caught up!</div>';
+                        notificationDot.style.display = 'none';
+                    } else {
+                        notificationDot.style.display = 'block';
+                    }
+                }
+
+                // Render Pie Chart
+                const pieChart = document.querySelector('.pie-chart');
+                const chartLegend = document.querySelector('.chart-legend');
+                
+                if (pieChart && chartLegend) {
+                    if (dynamicTotal === 0) {
+                        pieChart.style.background = '#e0e0e0';
+                        chartLegend.innerHTML = '<div class="legend-item">No Inventory</div>';
+                    } else {
+                        let gradientStr = [];
+                        let currentAngle = 0;
+                        chartLegend.innerHTML = '';
+                        
+                        chartData.forEach(cd => {
+                            let percentage = (cd.total / dynamicTotal);
+                            let degrees = percentage * 360;
+                            
+                            gradientStr.push(`${cd.color} ${currentAngle}deg ${currentAngle + degrees}deg`);
+                            currentAngle += degrees;
+                            
+                            const lg = document.createElement('div');
+                            lg.className = 'legend-item';
+                            lg.innerHTML = `<span class="color-box" style="background-color: ${cd.color}"></span> ${cd.name} (${Math.round(percentage * 100)}%)`;
+                            chartLegend.appendChild(lg);
+                        });
+                        
+                        pieChart.style.background = `conic-gradient(${gradientStr.join(', ')})`;
+                    }
+                }
+            }
+            loadDashboardView();
+
+            // Setup Navigation Tabs
+            const tabDashboard = document.getElementById('tab-dashboard');
+            const tabInventory = document.getElementById('tab-inventory');
+            const tabOrders = document.getElementById('tab-orders');
+            const tabReports = document.getElementById('tab-reports');
+            
+            const viewDashboard = document.getElementById('view-dashboard');
+            const viewInventory = document.getElementById('view-inventory');
+            const viewOrders = document.getElementById('view-orders');
+            const viewReports = document.getElementById('view-reports');
+
+            tabDashboard.addEventListener('click', () => {
+                tabDashboard.classList.add('active');
+                tabInventory.classList.remove('active');
+                if (tabOrders) tabOrders.classList.remove('active');
+                if (tabReports) tabReports.classList.remove('active');
+                
+                viewDashboard.style.display = 'block';
+                viewInventory.style.display = 'none';
+                if (viewOrders) viewOrders.style.display = 'none';
+                if (viewReports) viewReports.style.display = 'none';
+                
+                loadDashboardView(); // refresh totals
+            });
+
+            tabInventory.addEventListener('click', () => {
+                tabInventory.classList.add('active');
+                tabDashboard.classList.remove('active');
+                if (tabOrders) tabOrders.classList.remove('active');
+                if (tabReports) tabReports.classList.remove('active');
+                
+                viewInventory.style.display = 'block';
+                viewDashboard.style.display = 'none';
+                if (viewOrders) viewOrders.style.display = 'none';
+                if (viewReports) viewReports.style.display = 'none';
+                
+                renderInventoryView(); // build cards
+            });
+            
+            if (tabOrders) {
+                tabOrders.addEventListener('click', () => {
+                    tabOrders.classList.add('active');
+                    tabDashboard.classList.remove('active');
+                    tabInventory.classList.remove('active');
+                    if (tabReports) tabReports.classList.remove('active');
+                    
+                    viewOrders.style.display = 'block';
+                    viewDashboard.style.display = 'none';
+                    viewInventory.style.display = 'none';
+                    if (viewReports) viewReports.style.display = 'none';
+                });
+            }
+
+            if (tabReports) {
+                tabReports.addEventListener('click', () => {
+                    tabReports.classList.add('active');
+                    tabDashboard.classList.remove('active');
+                    tabInventory.classList.remove('active');
+                    if (tabOrders) tabOrders.classList.remove('active');
+                    
+                    viewReports.style.display = 'block';
+                    viewDashboard.style.display = 'none';
+                    viewInventory.style.display = 'none';
+                    if (viewOrders) viewOrders.style.display = 'none';
+                    
+                    if (typeof renderReportsView === 'function') renderReportsView();
+                });
+            }
+
+            // Inventory View Logic
+            function renderInventoryView() {
+                const container = document.getElementById('inventory-cards-container');
+                container.innerHTML = '';
+                
+                dashboardData.inventoryItems.forEach((item, index) => {
+                    const totalQty = getCardTotal(item);
+                    const card = document.createElement('div');
+                    card.className = 'inv-card';
+                    card.dataset.index = index;
+                    
+                    let warningSvg = '';
+                    if (item.lowStock) {
+                        warningSvg = `<svg class="warning-icon" viewBox="0 0 24 24" stroke-width="2">
+                                        <path d="M12 2L2 20H22L12 2Z" fill="#fff" stroke="#da534d"/>
+                                        <line x1="12" y1="9" x2="12" y2="15" stroke="#da534d" stroke-width="2"/>
+                                        <circle cx="12" cy="18" r="1" fill="#da534d"/>
+                                      </svg>`;
+                    }
+
+                    card.innerHTML = `
+                        <button class="btn-remove-item" title="Remove Item">&times;</button>
+                        <h3>${item.name}</h3>
+                        <div class="stat-content">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 100 100">
+                                    <path d="M10 70 Q 50 80 90 70 Q 95 65 85 60 Q 50 70 15 60 Q 5 65 10 70 Z" fill="#fff" stroke="#0d1b7a" stroke-width="2"/>
+                                    <path d="M20 62 C 20 20, 80 20, 80 62 Z" fill="#fff" stroke="#0d1b7a" stroke-width="2"/>
+                                    <path d="M50 25 V 62" stroke="#0d1b7a" stroke-width="1" stroke-dasharray="2,2"/>
+                                    <circle cx="50" cy="25" r="3" fill="#0d1b7a"/>
+                                </svg>
+                            </div>
+                            <div class="stat-value">
+                                <h2 id="card-total-${index}" style="font-size: 2.5rem; font-weight: 700; color: #0d1b7a;">${totalQty}</h2>
+                                <span style="color: #0d1b7a; font-weight: 700;">Items</span>
+                            </div>
+                        </div>
+                        ${warningSvg}
+                    `;
+                    
+                    const removeBtn = card.querySelector('.btn-remove-item');
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (confirm(`Are you sure you want to completely remove ${item.name}?`)) {
+                            dashboardData.inventoryItems.splice(index, 1);
+                            logActivity('text', { text: `Removed item: ${item.name}` });
+                            localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                            document.getElementById('inventory-details').style.display = 'none';
+                            renderInventoryView();
+                        }
+                    });
+
+                    card.addEventListener('click', () => {
+                        document.querySelectorAll('.inv-card').forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                        renderClassifications(index);
+                    });
+                    
+                    container.appendChild(card);
+                });
+
+                // Add New Item Card
+                const addCard = document.createElement('div');
+                addCard.className = 'inv-card add-new-card';
+                addCard.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    <span style="font-weight: 700; color: #0d1b7a; font-size: 1.1rem;">Add New Item</span>
+                `;
+                addCard.addEventListener('click', () => {
+                    const itemName = prompt("Enter the name of the new item (e.g., Beanie):");
+                    if (itemName && itemName.trim() !== '') {
+                        const newItem = {
+                            id: itemName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                            name: itemName.trim(),
+                            lowStock: false,
+                            classifications: []
+                        };
+                        dashboardData.inventoryItems.push(newItem);
+                        logActivity('text', { text: `Added new item: ${newItem.name}` });
+                        localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                        renderInventoryView(); // refresh the view
+                        
+                        // Auto-select the newly added item
+                        setTimeout(() => {
+                            const container = document.getElementById('inventory-cards-container');
+                            const newCardIndex = dashboardData.inventoryItems.length - 1;
+                            const cards = container.querySelectorAll('.inv-card:not(.add-new-card)');
+                            if(cards[newCardIndex]) cards[newCardIndex].click();
+                        }, 50);
+                    }
+                });
+                container.appendChild(addCard);
+
+                // Auto select first item if none active
+                if (dashboardData.inventoryItems.length > 0) {
+                    container.children[0].click();
+                }
+            }
+
+            function renderClassifications(itemIndex) {
+                const detailsBox = document.getElementById('inventory-details');
+                detailsBox.style.display = 'block';
+                
+                const classList = document.getElementById('class-list');
+                const qtyList = document.getElementById('qty-list');
+                classList.innerHTML = '';
+                qtyList.innerHTML = '';
+                
+                const item = dashboardData.inventoryItems[itemIndex];
+                
+                // Hook up Add New Classification button
+                const btnAddClass = document.getElementById('btn-add-class');
+                btnAddClass.onclick = () => {
+                    const clsName = prompt(`Enter new classification for ${item.name} (e.g., Purple):`);
+                    if (clsName && clsName.trim() !== '') {
+                        item.classifications.push({ name: clsName.trim(), quantity: 0 });
+                        logActivity('text', { text: `Added classification '${clsName.trim()}' to ${item.name}` });
+                        localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                        renderClassifications(itemIndex); // refresh the list
+                    }
+                };
+
+                item.classifications.forEach((cls, classIdx) => {
+                    // Class name
+                    const liClass = document.createElement('li');
+                    liClass.textContent = cls.name;
+                    classList.appendChild(liClass);
+                    
+                    // Quantity row
+                    const liQty = document.createElement('li');
+                    liQty.className = 'qty-row';
+                    
+                    const pill = document.createElement('input');
+                    pill.type = 'number';
+                    pill.min = '0';
+                    pill.className = 'qty-pill';
+                    if (cls.quantity <= 2) {
+                        pill.classList.add('low-stock-warn');
+                    }
+                    pill.value = cls.quantity;
+                    
+                    const btnPlus = document.createElement('button');
+                    btnPlus.className = 'qty-btn';
+                    btnPlus.textContent = '+';
+                    
+                    const btnMinus = document.createElement('button');
+                    btnMinus.className = 'qty-btn';
+                    btnMinus.textContent = '-';
+
+                    const btnRemoveClass = document.createElement('button');
+                    btnRemoveClass.className = 'qty-btn btn-remove-class';
+                    btnRemoveClass.innerHTML = '&times;';
+                    btnRemoveClass.title = "Remove Classification";
+                    
+                    // Handlers
+                    btnRemoveClass.addEventListener('click', () => {
+                        if (confirm(`Remove classification: ${cls.name}?`)) {
+                            dashboardData.inventoryItems[itemIndex].classifications.splice(classIdx, 1);
+                            logActivity('text', { text: `Removed classification '${cls.name}' from ${item.name}` });
+                            localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                            
+                            // update total on card before re-rendering list
+                            const newTotal = getCardTotal(item);
+                            document.getElementById(`card-total-${itemIndex}`).textContent = newTotal;
+                            
+                            renderClassifications(itemIndex);
+                        }
+                    });
+
+                    const updateData = (newQty) => {
+                        if (newQty < 0) newQty = 0;
+                        
+                        let oldQty = dashboardData.inventoryItems[itemIndex].classifications[classIdx].quantity;
+                        let diff = newQty - oldQty;
+                        
+                        if (diff !== 0) {
+                            logActivity('qty_change', {
+                                itemName: item.name,
+                                clsName: cls.name,
+                                diff: diff
+                            });
+                        }
+                        
+                        dashboardData.inventoryItems[itemIndex].classifications[classIdx].quantity = newQty;
+                        
+                        // update DOM
+                        pill.value = newQty;
+                        if (newQty <= 2) {
+                            pill.classList.add('low-stock-warn');
+                        } else {
+                            pill.classList.remove('low-stock-warn');
+                        }
+
+                        const newTotal = getCardTotal(item);
+                        document.getElementById(`card-total-${itemIndex}`).textContent = newTotal;
+                        
+                        // Update item-level low stock status and card warning icon
+                        let newlyLowStock = dashboardData.inventoryItems[itemIndex].classifications.some(c => c.quantity <= 2);
+                        dashboardData.inventoryItems[itemIndex].lowStock = newlyLowStock;
+                        
+                        let card = document.querySelector(`.inv-card[data-index="${itemIndex}"]`);
+                        if (card) {
+                            let hasWarning = card.querySelector('.warning-icon');
+                            if (newlyLowStock && !hasWarning) {
+                                card.insertAdjacentHTML('beforeend', `<svg class="warning-icon" viewBox="0 0 24 24" stroke-width="2">
+                                    <path d="M12 2L2 20H22L12 2Z" fill="#fff" stroke="#da534d"/>
+                                    <line x1="12" y1="9" x2="12" y2="15" stroke="#da534d" stroke-width="2"/>
+                                    <circle cx="12" cy="18" r="1" fill="#da534d"/>
+                                </svg>`);
+                            } else if (!newlyLowStock && hasWarning) {
+                                hasWarning.remove();
+                            }
+                        }
+                        
+                        // save
+                        localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    };
+
+                    pill.addEventListener('change', (e) => {
+                        let val = parseInt(e.target.value, 10);
+                        if (isNaN(val)) val = 0;
+                        updateData(val);
+                    });
+                    
+                    btnPlus.addEventListener('click', () => updateData(cls.quantity + 1));
+                    btnMinus.addEventListener('click', () => updateData(cls.quantity - 1));
+                    
+                    liQty.appendChild(pill);
+                    liQty.appendChild(btnPlus);
+                    liQty.appendChild(btnMinus);
+                    liQty.appendChild(btnRemoveClass);
+                    
+                    qtyList.appendChild(liQty);
+                });
+            }
+            // --- Orders Logic ---
+            if (!dashboardData.orders) {
+                dashboardData.orders = [];
+                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+            }
+
+            const renderOrdersView = () => {
+                const processingCountEl = document.getElementById('orders-processing-count');
+                const shippedCountEl = document.getElementById('orders-shipped-count');
+                const listContainer = document.getElementById('orders-list-container');
+                
+                if (!processingCountEl || !shippedCountEl || !listContainer) return;
+                
+                let processingCount = 0;
+                let shippedCount = 0;
+                
+                listContainer.innerHTML = '';
+                
+                dashboardData.orders.forEach((order, index) => {
+                    if (order.status === 'processing') processingCount++;
+                    if (order.status === 'shipped') shippedCount++;
+                    
+                    if (order.status !== 'processing') return; // only show processing orders in the active list
+                    
+                    const row = document.createElement('div');
+                    row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center;";
+                    
+                    row.innerHTML = `
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8);">
+                            ${order.quantity}
+                        </div>
+                        <div style="display: flex; gap: 15px;">
+                            <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; flex: 1; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${order.itemName}
+                            </div>
+                            <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; flex: 2; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${order.classification}
+                            </div>
+                        </div>
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1.2rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.customerName}
+                        </div>
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; min-height: 42px; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.address}
+                        </div>
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; min-height: 42px; text-align: center; color: #0d1b7a; font-weight: 800; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.mop}
+                        </div>
+                        <div style="background: linear-gradient(to bottom, #f7f9fb, #e2e8f0); border-radius: 20px; padding: 10px 15px; min-height: 42px; text-align: center; color: #da534d; font-weight: 800; font-size: 1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(255,255,255,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.deadline || '-'}
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button class="btn-edit-order" data-index="${index}" title="Edit Order" style="background: #f2a640; border: 2px solid white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                                <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; pointer-events: none;">
+                                    <path d="M12 20h9"></path>
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                </svg>
+                            </button>
+                            <button class="btn-delete-order" data-index="${index}" title="Delete Order" style="background: #da534d; border: 2px solid white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                                <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; pointer-events: none;">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                            <button class="btn-fulfill-order" data-index="${index}" title="Fulfill Order" style="background: #6dc339; border: 3px solid white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                                <svg viewBox="0 0 24 24" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 28px; height: 28px; pointer-events: none;">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    listContainer.appendChild(row);
+                });
+                
+                processingCountEl.textContent = processingCount;
+                shippedCountEl.textContent = shippedCount;
+                
+                // Attach listeners to fulfill buttons
+                document.querySelectorAll('.btn-fulfill-order').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.currentTarget.getAttribute('data-index');
+                        fulfillOrder(idx);
+                    });
+                });
+                
+                // Attach listeners to edit buttons
+                document.querySelectorAll('.btn-edit-order').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.currentTarget.getAttribute('data-index');
+                        editOrder(idx);
+                    });
+                });
+                
+                // Attach listeners to delete buttons
+                document.querySelectorAll('.btn-delete-order').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.currentTarget.getAttribute('data-index');
+                        deleteOrder(idx);
+                    });
+                });
+            };
+
+            const renderReportsView = () => {
+                const activeList = document.getElementById('reports-active-list');
+                const shippedList = document.getElementById('reports-shipped-list');
+                const deliveredList = document.getElementById('reports-delivered-list');
+                if (!activeList || !shippedList || !deliveredList) return;
+                
+                activeList.innerHTML = '';
+                shippedList.innerHTML = '';
+                deliveredList.innerHTML = '';
+                
+                if (dashboardData.orders && dashboardData.orders.length > 0) {
+                    dashboardData.orders.forEach((order, index) => {
+                        const row = document.createElement('div');
+                        
+                        if (order.status === 'processing') {
+                            row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center;";
+                            row.innerHTML = `
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8;">${order.quantity}</div>
+                                <div style="display: flex; gap: 10px;">
+                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 1; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.itemName}</div>
+                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 2; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.classification}</div>
+                                </div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.customerName}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.address}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.mop}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8;">${order.deadline || 'N/A'}</div>
+                                <button class="btn-report-ship" data-index="${index}" title="Mark as Shipped" style="background: #1abc9c; color: white; border: none; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: opacity 0.2s;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width: 24px; height: 24px;">
+                                        <path d="M20 6L9 17l-5-5"></path>
+                                    </svg>
+                                </button>
+                            `;
+                            row.querySelector('.btn-report-ship').onmouseover = function() { this.style.opacity = '0.8'; }
+                            row.querySelector('.btn-report-ship').onmouseout = function() { this.style.opacity = '1'; }
+                            activeList.appendChild(row);
+                        } else if (order.status === 'shipped') {
+                            row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center;";
+                            row.innerHTML = `
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8;">${order.quantity}</div>
+                                <div style="display: flex; gap: 10px;">
+                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 1; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.itemName}</div>
+                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 2; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.classification}</div>
+                                </div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.customerName}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.address}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${order.mop}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8;">${order.deadline || 'N/A'}</div>
+                                <button class="btn-report-deliver" data-index="${index}" title="Mark as Delivered" style="background: #3498db; color: white; border: none; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: opacity 0.2s;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="width: 24px; height: 24px;">
+                                        <path d="M20 6L9 17l-5-5"></path>
+                                    </svg>
+                                </button>
+                            `;
+                            row.querySelector('.btn-report-deliver').onmouseover = function() { this.style.opacity = '0.8'; }
+                            row.querySelector('.btn-report-deliver').onmouseout = function() { this.style.opacity = '1'; }
+                            shippedList.appendChild(row);
+                        } else if (order.status === 'delivered') {
+                            row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center;";
+                            row.innerHTML = `
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; color: #888;">${order.quantity}</div>
+                                <div style="display: flex; gap: 10px;">
+                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 1; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.itemName}</div>
+                                    <div style="background: #fff; border-radius: 12px; padding: 10px; flex: 2; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.classification}</div>
+                                </div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.customerName}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.address}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #888;">${order.mop}</div>
+                                <div style="background: #fff; border-radius: 12px; padding: 10px; text-align: center; font-weight: bold; border: 1px solid #e0e5d8; color: #888;">${order.deadline || 'N/A'}</div>
+                                <button class="btn-report-delete" data-index="${index}" title="Delete Record" style="background: #da534d; color: white; border: none; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: opacity 0.2s;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width: 20px; height: 20px;">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                </button>
+                            `;
+                            row.querySelector('.btn-report-delete').onmouseover = function() { this.style.opacity = '0.8'; }
+                            row.querySelector('.btn-report-delete').onmouseout = function() { this.style.opacity = '1'; }
+                            deliveredList.appendChild(row);
+                        }
+                    });
+                }
+                
+                if (activeList.innerHTML === '') activeList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic; padding: 20px; grid-column: 1 / -1;">No active orders to ship.</div>';
+                if (shippedList.innerHTML === '') shippedList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic; padding: 20px; grid-column: 1 / -1;">No shipped orders yet.</div>';
+                if (deliveredList.innerHTML === '') deliveredList.innerHTML = '<div style="text-align: center; color: #666; font-style: italic; padding: 20px; grid-column: 1 / -1;">No delivered orders yet.</div>';
+
+                // Attach listeners
+                document.querySelectorAll('.btn-report-ship').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.currentTarget.getAttribute('data-index');
+                        fulfillOrder(idx);
+                    });
+                });
+                
+                document.querySelectorAll('.btn-report-deliver').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.currentTarget.getAttribute('data-index');
+                        deliverOrder(idx);
+                    });
+                });
+
+                document.querySelectorAll('.btn-report-delete').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.currentTarget.getAttribute('data-index');
+                        if(confirm('Are you sure you want to delete this completed order history?')) {
+                            dashboardData.orders.splice(idx, 1);
+                            localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                            renderReportsView();
+                            renderShippedOrders();
+                            renderOrdersView();
+                            loadDashboardView();
+                        }
+                    });
+                });
+            };
+
+            const deliverOrder = (orderIndex) => {
+                const order = dashboardData.orders[orderIndex];
+                if (confirm(`Confirm order to ${order.customerName} has been delivered?`)) {
+                    dashboardData.orders[orderIndex].status = 'delivered';
+                    logActivity('text', {text: `Order delivered to ${order.customerName}`});
+                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    renderReportsView();
+                    renderShippedOrders();
+                    renderOrdersView();
+                    loadDashboardView();
+                }
+            };
+
+            const fulfillOrder = (orderIndex) => {
+                const order = dashboardData.orders[orderIndex];
+                
+                // Find in inventory
+                let foundItem = null;
+                let foundClass = null;
+                let itemIdx = -1;
+                let classIdx = -1;
+                
+                dashboardData.inventoryItems.forEach((item, i) => {
+                    if (item.name.toLowerCase() === order.itemName.toLowerCase() || item.id.toLowerCase() === order.itemName.toLowerCase()) {
+                        item.classifications.forEach((cls, c) => {
+                            if (cls.name.toLowerCase() === order.classification.toLowerCase()) {
+                                foundItem = item;
+                                foundClass = cls;
+                                itemIdx = i;
+                                classIdx = c;
+                            }
+                        });
+                    }
+                });
+                
+                if (!foundItem || !foundClass) {
+                    alert(`Cannot fulfill: Could not find inventory item '${order.itemName}' with classification '${order.classification}'.`);
+                    return;
+                }
+                
+                if (foundClass.quantity < order.quantity) {
+                    alert(`Cannot fulfill: Insufficient stock. You only have ${foundClass.quantity} but need ${order.quantity}.`);
+                    return;
+                }
+                
+                if (confirm(`Fulfill order for ${order.quantity} ${order.classification} ${order.itemName}(s) to ${order.customerName}?`)) {
+                    // Deduct
+                    dashboardData.inventoryItems[itemIdx].classifications[classIdx].quantity -= order.quantity;
+                    
+                    // Mark order shipped
+                    dashboardData.orders[orderIndex].status = 'shipped';
+                    
+                    // Update active orders count in dashboard totals
+                    dashboardData.activeOrders = Math.max(0, (dashboardData.activeOrders || 0) - 1);
+                    
+                    // Log
+                    logActivity('text', {text: `Shipped ${order.quantity} ${order.classification} ${order.itemName}(s) to ${order.customerName}`});
+                    
+                    // Save & re-render
+                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    renderOrdersView();
+                    if (typeof renderReportsView === 'function') renderReportsView();
+                    loadDashboardView();
+                    
+                    // Also refresh the background totals in case we switch tabs
+                    loadDashboardView(); 
+                }
+            };
+
+            const editOrder = (orderIndex) => {
+                const order = dashboardData.orders[orderIndex];
+                
+                const itemName = prompt('Edit Item Name:', order.itemName);
+                if (itemName === null) return;
+                
+                const classification = prompt('Edit Classification:', order.classification);
+                if (classification === null) return;
+                
+                let foundItem = false;
+                let foundClass = false;
+                
+                dashboardData.inventoryItems.forEach(item => {
+                    if (item.name.toLowerCase() === itemName.toLowerCase() || item.id.toLowerCase() === itemName.toLowerCase()) {
+                        foundItem = true;
+                        item.classifications.forEach(cls => {
+                            if (cls.name.toLowerCase() === classification.toLowerCase()) {
+                                foundClass = true;
+                            }
+                        });
+                    }
+                });
+                
+                if (!foundItem || !foundClass) {
+                    alert(`Error: Cannot find '${classification}' classification for item '${itemName}' in your inventory. Please check your spelling and try again.`);
+                    return;
+                }
+                
+                const qtyStr = prompt('Edit Quantity:', order.quantity);
+                if (qtyStr === null) return;
+                const qty = parseInt(qtyStr, 10);
+                if (isNaN(qty) || qty <= 0) {
+                    alert("Invalid quantity");
+                    return;
+                }
+                
+                const customerName = prompt('Edit Customer Name:', order.customerName);
+                if (customerName === null) return;
+                
+                const address = prompt('Edit Address:', order.address);
+                if (address === null) return;
+                
+                const mop = prompt('Edit Method of Payment:', order.mop);
+                if (mop === null) return;
+                
+                const deadline = prompt('Edit Deadline:', order.deadline || '');
+                if (deadline === null) return;
+                
+                order.itemName = itemName;
+                order.classification = classification;
+                order.quantity = qty;
+                order.customerName = customerName;
+                order.address = address;
+                order.mop = mop;
+                order.deadline = deadline;
+                
+                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                renderOrdersView();
+            };
+
+            const deleteOrder = (orderIndex) => {
+                const order = dashboardData.orders[orderIndex];
+                if (confirm(`Are you sure you want to delete the order for ${order.customerName}?`)) {
+                    dashboardData.orders.splice(orderIndex, 1);
+                    
+                    if (order.status === 'processing') {
+                        dashboardData.activeOrders = Math.max(0, (dashboardData.activeOrders || 0) - 1);
+                    }
+                    
+                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    renderOrdersView();
+                    loadDashboardView(); 
+                }
+            };
+
+            const btnAddOrder = document.getElementById('btn-add-order');
+            if (btnAddOrder) {
+                btnAddOrder.addEventListener('click', () => {
+                    const itemName = prompt('Item Name (e.g. Snapback cap, Trucker cap, Closed Cap):');
+                    if (!itemName) return;
+                    
+                    const classification = prompt('Classification (e.g. Red, Blue):');
+                    if (!classification) return;
+                    
+                    let foundItem = false;
+                    let foundClass = false;
+                    
+                    dashboardData.inventoryItems.forEach(item => {
+                        if (item.name.toLowerCase() === itemName.toLowerCase() || item.id.toLowerCase() === itemName.toLowerCase()) {
+                            foundItem = true;
+                            item.classifications.forEach(cls => {
+                                if (cls.name.toLowerCase() === classification.toLowerCase()) {
+                                    foundClass = true;
+                                }
+                            });
+                        }
+                    });
+                    
+                    if (!foundItem || !foundClass) {
+                        alert(`Error: Cannot find '${classification}' classification for item '${itemName}' in your inventory. Please check your spelling and try again.`);
+                        return;
+                    }
+                    
+                    const qtyStr = prompt('Quantity:');
+                    if (!qtyStr) return;
+                    const qty = parseInt(qtyStr, 10);
+                    if (isNaN(qty) || qty <= 0) {
+                        alert("Invalid quantity");
+                        return;
+                    }
+                    
+                    const customerName = prompt('Customer Name:');
+                    if (!customerName) return;
+                    
+                    const address = prompt('Address (optional):') || '';
+                    const mop = prompt('Method of Payment (optional):') || '';
+                    const deadline = prompt('Deadline (optional, e.g. Oct 15):') || '';
+                    
+                    dashboardData.orders.push({
+                        status: 'processing',
+                        quantity: qty,
+                        itemName: itemName,
+                        classification: classification,
+                        customerName: customerName,
+                        address: address,
+                        mop: mop,
+                        deadline: deadline
+                    });
+                    
+                    dashboardData.activeOrders = (dashboardData.activeOrders || 0) + 1;
+                    
+                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    renderOrdersView();
+                    loadDashboardView();
+                });
+            }
+            
+            // Initial call to render orders
+            renderOrdersView();
+
+            // Shipped Orders Modal Logic
+            const cardShipped = document.getElementById('card-shipped');
+            const modalShipped = document.getElementById('modal-shipped');
+            const btnCloseShippedModal = document.getElementById('btn-close-shipped-modal');
+            const shippedListContainer = document.getElementById('shipped-list-container');
+            
+            const renderShippedOrders = () => {
+                if (!shippedListContainer) return;
+                shippedListContainer.innerHTML = '';
+                
+                let hasShipped = false;
+                dashboardData.orders.forEach((order, index) => {
+                    if (order.status !== 'shipped') return;
+                    hasShipped = true;
+                    
+                    const row = document.createElement('div');
+                    row.style.cssText = "display: grid; grid-template-columns: 1fr 2.5fr 1.5fr 2fr 1.5fr 1.5fr auto; gap: 20px; align-items: center; border-bottom: 1px solid #e0e5d8; padding-bottom: 10px;";
+                    
+                    row.innerHTML = `
+                        <div style="background: #e2e8f0; border-radius: 10px; padding: 5px 10px; text-align: center; color: #333; font-weight: bold;">
+                            ${order.quantity}
+                        </div>
+                        <div style="text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.itemName}
+                        </div>
+                        <div style="text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.classification}
+                        </div>
+                        <div style="text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.customerName}
+                        </div>
+                        <div style="text-align: center; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.mop || '-'}
+                        </div>
+                        <div style="text-align: center; color: #da534d; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${order.deadline || '-'}
+                        </div>
+                        <button class="btn-cancel-shipped" data-index="${index}" title="Cancel & Restore Inventory" style="background: #da534d; border: 2px solid white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                            <svg viewBox="0 0 24 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; pointer-events: none;">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    `;
+                    shippedListContainer.appendChild(row);
+                });
+                
+                if (!hasShipped) {
+                    shippedListContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666; font-style: italic;">No shipped orders yet.</div>';
+                }
+                
+                document.querySelectorAll('.btn-cancel-shipped').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = e.currentTarget.getAttribute('data-index');
+                        cancelShippedOrder(idx);
+                    });
+                });
+            };
+
+            const cancelShippedOrder = (orderIndex) => {
+                const order = dashboardData.orders[orderIndex];
+                if (confirm(`Are you sure you want to cancel this shipped order for ${order.customerName}? This will restore ${order.quantity} ${order.classification} ${order.itemName}(s) back to inventory.`)) {
+                    
+                    let restored = false;
+                    dashboardData.inventoryItems.forEach((item) => {
+                        if (item.name.toLowerCase() === order.itemName.toLowerCase() || item.id.toLowerCase() === order.itemName.toLowerCase()) {
+                            item.classifications.forEach((cls) => {
+                                if (cls.name.toLowerCase() === order.classification.toLowerCase()) {
+                                    cls.quantity += order.quantity;
+                                    restored = true;
+                                }
+                            });
+                        }
+                    });
+                    
+                    if (!restored) {
+                        alert("Warning: Could not find original inventory item to restore stock. Order will be deleted anyway.");
+                    } else {
+                        logActivity('text', {text: `Cancelled order and restored ${order.quantity} ${order.classification} ${order.itemName}(s)`});
+                    }
+                    
+                    dashboardData.orders.splice(orderIndex, 1);
+                    
+                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    renderShippedOrders();
+                    renderOrdersView();
+                    if (typeof renderReportsView === 'function') renderReportsView();
+                    loadDashboardView(); 
+                }
+            };
+            
+            if (cardShipped && modalShipped) {
+                cardShipped.addEventListener('click', () => {
+                    renderShippedOrders();
+                    modalShipped.style.display = 'flex';
+                });
+                
+                btnCloseShippedModal.addEventListener('click', () => {
+                    modalShipped.style.display = 'none';
+                });
+                
+                window.addEventListener('click', (e) => {
+                    if (e.target === modalShipped) {
+                        modalShipped.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Low Stock Modal Logic
+            const cardLowStock = document.getElementById('card-low-stock');
+            const modalLowStock = document.getElementById('modal-lowstock');
+            const btnCloseLowStockModal = document.getElementById('btn-close-lowstock-modal');
+            const lowstockListContainer = document.getElementById('lowstock-list-container');
+            
+            const renderLowStockItems = () => {
+                if (!lowstockListContainer) return;
+                lowstockListContainer.innerHTML = '';
+                
+                let hasLowStock = false;
+                dashboardData.inventoryItems.forEach((item) => {
+                    item.classifications.forEach((cls) => {
+                        if (cls.quantity <= 2) {
+                            hasLowStock = true;
+                            
+                            const row = document.createElement('div');
+                            row.style.cssText = "display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 20px; align-items: center; border-bottom: 1px solid #e0e5d8; padding-bottom: 10px;";
+                            
+                            row.innerHTML = `
+                                <div style="color: #333; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${item.name}
+                                </div>
+                                <div style="color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${cls.name}
+                                </div>
+                                <div style="background: #fde8e8; border: 2px solid #da534d; border-radius: 10px; padding: 5px 10px; text-align: center; color: #da534d; font-weight: bold;">
+                                    ${cls.quantity} left
+                                </div>
+                            `;
+                            lowstockListContainer.appendChild(row);
+                        }
+                    });
+                });
+                
+                if (!hasLowStock) {
+                    lowstockListContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666; font-style: italic;">All stock levels are healthy!</div>';
+                }
+            };
+            
+            if (cardLowStock && modalLowStock) {
+                cardLowStock.addEventListener('click', () => {
+                    renderLowStockItems();
+                    modalLowStock.style.display = 'flex';
+                });
+                
+                btnCloseLowStockModal.addEventListener('click', () => {
+                    modalLowStock.style.display = 'none';
+                });
+                
+                window.addEventListener('click', (e) => {
+                    if (e.target === modalLowStock) {
+                        modalLowStock.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Notification Dropdown Toggle Logic
+            const btnNotifications = document.getElementById('btn-notifications');
+            const notificationDropdown = document.getElementById('notification-dropdown');
+            
+            if (btnNotifications && notificationDropdown) {
+                btnNotifications.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (notificationDropdown.style.display === 'none') {
+                        notificationDropdown.style.display = 'block';
+                    } else {
+                        notificationDropdown.style.display = 'none';
+                    }
+                });
+                
+                window.addEventListener('click', (e) => {
+                    if (e.target !== notificationDropdown && !notificationDropdown.contains(e.target) && e.target !== btnNotifications && !btnNotifications.contains(e.target)) {
+                        notificationDropdown.style.display = 'none';
+                    }
+                });
+            }
+            
+            // About Modal Logic
+            const navAbout = document.getElementById('nav-about');
+            const modalAbout = document.getElementById('modal-about');
+            const btnCloseAboutModal = document.getElementById('btn-close-about-modal');
+            
+            if (navAbout && modalAbout) {
+                navAbout.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modalAbout.style.display = 'flex';
+                });
+                
+                btnCloseAboutModal.addEventListener('click', () => {
+                    modalAbout.style.display = 'none';
+                });
+                
+                window.addEventListener('click', (e) => {
+                    if (e.target === modalAbout) {
+                        modalAbout.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Contact Us Modal Logic
+            const navContact = document.getElementById('nav-contact');
+            const modalContact = document.getElementById('modal-contact');
+            const btnCloseContactModal = document.getElementById('btn-close-contact-modal');
+            
+            if (navContact && modalContact) {
+                navContact.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modalContact.style.display = 'flex';
+                });
+                
+                btnCloseContactModal.addEventListener('click', () => {
+                    modalContact.style.display = 'none';
+                });
+                
+                window.addEventListener('click', (e) => {
+                    if (e.target === modalContact) {
+                        modalContact.style.display = 'none';
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
