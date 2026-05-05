@@ -796,6 +796,16 @@
 
             <!-- Reports View -->
             <div id="view-reports" style="display: none; padding: 20px;">
+                <!-- Header with Action Button -->
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <button id="btn-reset-delivery-data" style="background: #da534d; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: opacity 0.2s;" onmouseover="this.style.opacity=0.9" onmouseout="this.style.opacity=1">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Reset Delivery Data
+                    </button>
+                </div>
                 <!-- Content Container -->
                 <div style="display: flex; gap: 40px; flex-wrap: wrap;">
                     
@@ -821,20 +831,20 @@
 
                     <!-- Right Chart (Vertical Bars) -->
                     <div class="card" style="width: 480px; height: 360px;">
-                        <h3 style="margin-top: 0;">To Be Shipped Items</h3>
+                        <h3 style="margin-top: 0;">Top Items Delivered</h3>
                         <div style="position: relative; height: 100%; display: flex; flex-direction: column;">
                             <div style="display: flex; flex-grow: 1; margin-left: 25px; border-left: 2px solid rgba(13,27,122,0.2); border-bottom: 2px solid rgba(13,27,122,0.2); position: relative;">
                                 <!-- Y Axis -->
-                                <div id="reports-to-be-shipped-axis-y" style="position: absolute; left: -25px; top: 0; height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.8rem; color: #0d1b7a; font-weight: bold;">
+                                <div id="reports-delivered-axis-y" style="position: absolute; left: -25px; top: 0; height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.8rem; color: #0d1b7a; font-weight: bold;">
                                     <span>0</span>
                                 </div>
                                 <!-- Bars -->
-                                <div id="reports-to-be-shipped-bars" style="display: flex; justify-content: space-around; align-items: flex-end; width: 100%; padding: 0 15px;">
+                                <div id="reports-delivered-bars" style="display: flex; justify-content: space-around; align-items: flex-end; width: 100%; padding: 0 15px;">
                                     <!-- Injected via JS -->
                                 </div>
                             </div>
                             <!-- X Axis -->
-                            <div id="reports-to-be-shipped-axis-x" style="display: flex; justify-content: space-around; margin-left: 25px; padding: 0 15px; margin-top: 10px; font-size: 0.9rem; color: #0d1b7a; font-weight: bold;">
+                            <div id="reports-delivered-axis-x" style="display: flex; justify-content: space-around; margin-left: 25px; padding: 0 15px; margin-top: 10px; font-size: 0.9rem; color: #0d1b7a; font-weight: bold;">
                                 <!-- Injected via JS -->
                             </div>
                         </div>
@@ -1778,22 +1788,32 @@
                 let ordersChanged = false;
                 const now = new Date();
                 
-                dashboardData.orders = dashboardData.orders.filter(order => {
+                dashboardData.orders.forEach(order => {
                     if (order.status === 'shipped' && order.deadline) {
                         const deadlineDate = new Date(order.deadline);
                         if (!isNaN(deadlineDate.getTime())) {
                             deadlineDate.setHours(23, 59, 59, 999);
                             if (now > deadlineDate) {
+                                order.status = 'delivered';
+                                order.deliveredAt = new Date().toISOString();
+                                
+                                dashboardData.notifications = dashboardData.notifications || [];
+                                dashboardData.notifications.unshift({
+                                    id: Date.now() + Math.floor(Math.random() * 1000),
+                                    type: 'delivered',
+                                    message: `${order.quantity} ${order.itemName}(s) automatically marked delivered (deadline passed)`
+                                });
+                                if (dashboardData.notifications.length > 20) dashboardData.notifications.length = 20;
+                                
                                 ordersChanged = true;
-                                return false; // auto remove
                             }
                         }
                     }
-                    return true;
                 });
                 
                 if (ordersChanged) {
                     localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    if (typeof renderReportsView === 'function') renderReportsView();
                 }
             };
 
@@ -1895,6 +1915,34 @@
             };
 
             const renderReportsView = () => {
+                const btnResetDeliveryData = document.getElementById('btn-reset-delivery-data');
+                if (btnResetDeliveryData) {
+                    btnResetDeliveryData.onclick = () => {
+                        if (confirm('Are you sure you want to reset all delivery statistics? This will permanently clear the delivery history from the "Top Items Delivered" graph and "Delivery Stats". Active and shipped orders will not be affected.')) {
+                            let hasData = false;
+                            
+                            if (dashboardData.orders) {
+                                const oldLen = dashboardData.orders.length;
+                                dashboardData.orders = dashboardData.orders.filter(order => order.status !== 'delivered');
+                                if (dashboardData.orders.length < oldLen) hasData = true;
+                            }
+                            
+                            if (dashboardData.activity) {
+                                const oldLen = dashboardData.activity.length;
+                                dashboardData.activity = dashboardData.activity.filter(act => !(act.type === 'qty_change' && act.diff < 0));
+                                if (dashboardData.activity.length < oldLen) hasData = true;
+                            }
+                            
+                            if (hasData) {
+                                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                                renderReportsView();
+                            } else {
+                                alert('There is no delivery data to clear.');
+                            }
+                        }
+                    };
+                }
+                
                 const btnClearReports = document.getElementById('btn-clear-reports');
                 if (btnClearReports) {
                     btnClearReports.onclick = () => {
@@ -1961,19 +2009,38 @@
                     totalOrdersStatContainer.textContent = totalOrdersDelivered;
                 }
                 
-                // --- NEW LOGIC: Update "To Be Shipped Items" chart (Vertical) ---
-                const toBeShippedBarsContainer = document.getElementById('reports-to-be-shipped-bars');
-                const toBeShippedAxisY = document.getElementById('reports-to-be-shipped-axis-y');
-                const toBeShippedAxisX = document.getElementById('reports-to-be-shipped-axis-x');
+                // --- NEW LOGIC: Update "Items Delivered" chart (Vertical) ---
+                const deliveredBarsContainer = document.getElementById('reports-delivered-bars');
+                const deliveredAxisY = document.getElementById('reports-delivered-axis-y');
+                const deliveredAxisX = document.getElementById('reports-delivered-axis-x');
                 
-                if (toBeShippedBarsContainer && toBeShippedAxisY && toBeShippedAxisX) {
+                if (deliveredBarsContainer && deliveredAxisY && deliveredAxisX) {
                     const itemCounts = {};
+                    
                     if (dashboardData.orders) {
                         dashboardData.orders.forEach(order => {
-                            if (order.status === 'shipped') { // "To Be Shipped" stage
+                            if (order.status === 'delivered') {
                                 const itemName = order.itemName || 'Unknown';
+                                const classification = order.classification || '';
+                                const fullName = classification ? `${classification} ${itemName}` : itemName;
                                 const qty = parseInt(order.quantity, 10) || 0;
-                                itemCounts[itemName] = (itemCounts[itemName] || 0) + qty;
+                                itemCounts[fullName] = (itemCounts[fullName] || 0) + qty;
+                            }
+                        });
+                    }
+                    
+                    if (dashboardData.activity) {
+                        dashboardData.activity.forEach(act => {
+                            if (act.type === 'qty_change' && act.diff < 0) {
+                                const qty = Math.abs(act.diff);
+                                let itemName = act.itemId || 'Unknown';
+                                if (dashboardData.inventoryItems) {
+                                    const item = dashboardData.inventoryItems.find(i => i.id === act.itemId || i.name === act.itemId);
+                                    if (item && item.name) itemName = item.name;
+                                }
+                                const classification = act.classificationId || act.classification || '';
+                                const fullName = classification ? `${classification} ${itemName}` : itemName;
+                                itemCounts[fullName] = (itemCounts[fullName] || 0) + qty;
                             }
                         });
                     }
@@ -1983,12 +2050,12 @@
                     
                     const chartColors = ['#38a5db', '#53a948', '#da534d', '#d1a12e'];
                     
-                    toBeShippedBarsContainer.innerHTML = '';
-                    toBeShippedAxisX.innerHTML = '';
-                    toBeShippedAxisY.innerHTML = '';
+                    deliveredBarsContainer.innerHTML = '';
+                    deliveredAxisX.innerHTML = '';
+                    deliveredAxisY.innerHTML = '';
                     
                     if (topItems.length === 0) {
-                        toBeShippedBarsContainer.innerHTML = '<div style="position: absolute; top: 40%; left: 0; right: 0; text-align: center; color: #666; font-style: italic;">No items waiting to be shipped.</div>';
+                        deliveredBarsContainer.innerHTML = '<div style="position: absolute; top: 40%; left: 0; right: 0; text-align: center; color: #666; font-style: italic;">No items delivered yet.</div>';
                     } else {
                         const maxCount = topItems[0].count;
                         
@@ -2003,17 +2070,17 @@
                                     <div style="width: 55px; height: ${heightPercent}%; background-color: ${color}; border-radius: 5px 5px 0 0; box-shadow: inset -3px 0 5px rgba(0,0,0,0.2);"></div>
                                 </div>
                             `;
-                            toBeShippedBarsContainer.insertAdjacentHTML('beforeend', barHtml);
+                            deliveredBarsContainer.insertAdjacentHTML('beforeend', barHtml);
                             
-                            // X Axis label
+                            // X Axis label - slightly smaller to fit detailed names
                             const xLabelHtml = `
-                                <span style="max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;" title="${item.name}">${item.name}</span>
+                                <span style="max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: 0.8rem;" title="${item.name}">${item.name}</span>
                             `;
-                            toBeShippedAxisX.insertAdjacentHTML('beforeend', xLabelHtml);
+                            deliveredAxisX.insertAdjacentHTML('beforeend', xLabelHtml);
                         });
                         
                         // Y Axis
-                        toBeShippedAxisY.innerHTML = `
+                        deliveredAxisY.innerHTML = `
                             <span>${maxCount}</span>
                             <span>${Math.ceil(maxCount * 0.75)}</span>
                             <span>${Math.ceil(maxCount * 0.5)}</span>

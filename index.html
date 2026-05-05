@@ -31,6 +31,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 20;
         }
 
         .logo {
@@ -184,8 +186,8 @@
     <nav class="navbar">
         <div class="logo">TrackCap</div>
         <div class="nav-links">
-            <a href="#">About</a>
-            <a href="#">Contact Us</a>
+            <a href="#" id="nav-about">About</a>
+            <a href="#" id="nav-contact">Contact Us</a>
         </div>
     </nav>
 
@@ -233,7 +235,115 @@
 
     <div class="bottom-left-number">1</div>
 
+    <!-- About Us Modal -->
+    <div id="modal-about" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center;">
+        <div style="background: #fff; border-radius: 15px; padding: 40px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; position: relative;">
+            <button id="btn-close-about-modal" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #da534d; line-height: 1;">&times;</button>
+            
+            <div style="margin-bottom: 20px;">
+                <h2 style="color: #0d1b7a; margin: 0; font-size: 2.5rem; letter-spacing: 2px;">CDM CPE</h2>
+                <div style="color: #666; font-size: 1.1rem; margin-top: 5px; font-style: italic;">Powered by TrackCap Inventory System</div>
+            </div>
+            
+            <div style="background: #f4f6f8; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #e0e5d8;">
+                <h3 style="color: #333; margin-top: 0; font-size: 1.2rem; border-bottom: 2px solid #0d1b7a; padding-bottom: 10px; display: inline-block;">Development Team</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #0d1b7a; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold;">E</div>
+                        <div>
+                            <div style="font-weight: 800; color: #0d1b7a; font-size: 1rem;">Edzel Cabaluan</div>
+                            <div style="color: #666; font-size: 0.8rem; font-weight: bold;">Developer</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #1abc9c; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold;">J</div>
+                        <div>
+                            <div style="font-weight: 800; color: #0d1b7a; font-size: 1rem;">John Carpio</div>
+                            <div style="color: #666; font-size: 0.8rem; font-weight: bold;">Developer</div>
+                        </div>
+                    </div>
 
+                    <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #f39c12; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold;">W</div>
+                        <div>
+                            <div style="font-weight: 800; color: #0d1b7a; font-size: 1rem;">Warren Lara</div>
+                            <div style="color: #666; font-size: 0.8rem; font-weight: bold;">Developer</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #e74c3c; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold;">Z</div>
+                        <div>
+                            <div style="font-weight: 800; color: #0d1b7a; font-size: 1rem;">Zeal Reynante</div>
+                            <div style="color: #666; font-size: 0.8rem; font-weight: bold;">Developer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p style="color: #555; font-size: 0.95rem; line-height: 1.5;">
+                TrackCap is a state-of-the-art inventory management solution designed specifically for EzCaps to streamline orders, track products, and monitor low stock alerts in real-time.
+            </p>
+        </div>
+    </div>
+    
+    <!-- Contact Us Modal -->
+    <div id="modal-contact" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center;">
+        <div style="background: #fff; border-radius: 15px; padding: 40px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; position: relative;">
+            <button id="btn-close-contact-modal" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #da534d; line-height: 1;">&times;</button>
+            
+            <div style="margin-bottom: 30px;">
+                <h2 style="color: #0d1b7a; margin: 0; font-size: 2.2rem; letter-spacing: 1px;">Contact Us</h2>
+                <div style="color: #666; font-size: 1.05rem; margin-top: 5px;">We'd love to hear from you!</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 20px; text-align: left; background: #f9fbfd; padding: 25px; border-radius: 12px; border: 1px solid #e0e5d8;">
+                <!-- Email -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e5d8; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#0d1b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: #666; font-weight: bold; text-transform: uppercase;">Email</div>
+                        <div style="font-size: 1.1rem; color: #333; font-weight: 600;">its.warrenlara@gmail.com</div>
+                    </div>
+                </div>
+
+                <!-- Instagram -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e5d8; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#0d1b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: #666; font-weight: bold; text-transform: uppercase;">Instagram</div>
+                        <div style="font-size: 1.1rem; color: #333; font-weight: 600;">@war_rl</div>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e5d8; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#0d1b7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: #666; font-weight: bold; text-transform: uppercase;">Phone Number</div>
+                        <div style="font-size: 1.1rem; color: #333; font-weight: 600;">09383674285</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Form Elements
@@ -348,6 +458,50 @@
             recoveryFormNewPassword.style.display = 'none';
             loginForm.style.display = 'flex';
         });
+
+        // About Modal Logic
+        const navAbout = document.getElementById('nav-about');
+        const modalAbout = document.getElementById('modal-about');
+        const btnCloseAboutModal = document.getElementById('btn-close-about-modal');
+        
+        if (navAbout && modalAbout) {
+            navAbout.addEventListener('click', (e) => {
+                e.preventDefault();
+                modalAbout.style.display = 'flex';
+            });
+            
+            btnCloseAboutModal.addEventListener('click', () => {
+                modalAbout.style.display = 'none';
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === modalAbout) {
+                    modalAbout.style.display = 'none';
+                }
+            });
+        }
+        
+        // Contact Us Modal Logic
+        const navContact = document.getElementById('nav-contact');
+        const modalContact = document.getElementById('modal-contact');
+        const btnCloseContactModal = document.getElementById('btn-close-contact-modal');
+        
+        if (navContact && modalContact) {
+            navContact.addEventListener('click', (e) => {
+                e.preventDefault();
+                modalContact.style.display = 'flex';
+            });
+            
+            btnCloseContactModal.addEventListener('click', () => {
+                modalContact.style.display = 'none';
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === modalContact) {
+                    modalContact.style.display = 'none';
+                }
+            });
+        }
     </script>
 </body>
 </html>
