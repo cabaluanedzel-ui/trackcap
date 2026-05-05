@@ -1113,12 +1113,7 @@
 
             // Fallback for older accounts without inventoryItems
             if (!dashboardData.inventoryItems) {
-                dashboardData.inventoryItems = [
-                    {
-                        id: "trucker", name: "Trucker cap", lowStock: false,
-                        classifications: [{ name: "Blue", quantity: 5 }, { name: "White", quantity: 12 }]
-                    }
-                ];
+                dashboardData.inventoryItems = [];
                 saveDashboardToSupabase();
             }
             
