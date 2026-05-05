@@ -1052,12 +1052,56 @@
         </main>
     </div>
 
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Check authentication
-        const currentUser = sessionStorage.getItem('currentUser');
-        if (!currentUser) {
-            window.location.href = 'index.html';
-        } else {
+        (async function() {
+            // Check authentication
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Initialize Supabase
+            const supabaseUrl = 'https://ttsrfwgbqwtofujwcqas.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0c3Jmd2dicXd0b2Z1andjcWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NTg3MzEsImV4cCI6MjA5MzUzNDczMX0.dcXRwnEUJvfeoKq8kvpgjJxVZz_-wdUEFdKF08jQqyE';
+            if (!window.supabase) {
+                alert("Error: Supabase library failed to load.");
+            }
+            const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+            // Fetch user data
+            const { data: userData, error } = await supabaseClient
+                .from('users')
+                .select('dashboard_data')
+                .eq('username', currentUser)
+                .maybeSingle();
+
+            if (error) {
+                alert("Failed to load your data from the cloud: " + error.message);
+            }
+
+            let dashboardData = (userData && userData.dashboard_data) ? userData.dashboard_data : null;
+            
+            if (!dashboardData || Object.keys(dashboardData).length === 0) {
+                // Migrate from local storage if cloud is empty
+                dashboardData = JSON.parse(localStorage.getItem(`trackcap_dashboard_${currentUser}`) || '{}');
+            }
+
+            // Sync function to replace localStorage.setItem
+            function saveDashboardToSupabase() {
+                supabaseClient
+                    .from('users')
+                    .update({ dashboard_data: dashboardData })
+                    .eq('username', currentUser)
+                    .then(({ error }) => {
+                        if (error) console.error("Failed to sync to cloud:", error);
+                    });
+                // Keep local storage as backup just in case
+                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+            }
+
             document.getElementById('welcome-user').textContent = currentUser;
             
             document.getElementById('btn-logout').addEventListener('click', () => {
@@ -1066,8 +1110,6 @@
                     window.location.href = 'index.html';
                 }
             });
-            
-            let dashboardData = JSON.parse(localStorage.getItem(`trackcap_dashboard_${currentUser}`) || '{}');
 
             // Fallback for older accounts without inventoryItems
             if (!dashboardData.inventoryItems) {
@@ -1077,7 +1119,7 @@
                         classifications: [{ name: "Blue", quantity: 5 }, { name: "White", quantity: 12 }]
                     }
                 ];
-                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                saveDashboardToSupabase();
             }
             
             // --- Profile Logic ---
@@ -1208,7 +1250,7 @@
                     dashboardData.profile.avatarBase64 = currentAvatarBase64;
                     
                     try {
-                        localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                        saveDashboardToSupabase();
                         updateProfileUI();
                         modalProfile.style.display = 'none';
                     } catch (e) {
@@ -1273,7 +1315,7 @@
                 if (dashboardData.activity.length > 5) {
                     dashboardData.activity = dashboardData.activity.slice(0, 5);
                 }
-                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                saveDashboardToSupabase();
             }
 
             // Function to calculate totals dynamically
@@ -1324,7 +1366,7 @@
                 dashboardData.totalInventory = dynamicTotal;
                 dashboardData.lowStocks = lowStocksCount;
                 dashboardData.activeOrders = dynamicActiveOrders;
-                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                saveDashboardToSupabase();
 
                 document.getElementById('total-inventory').textContent = dashboardData.totalInventory;
                 document.getElementById('low-stocks').textContent = dashboardData.lowStocks;
@@ -1586,7 +1628,7 @@
                         if (confirm(`Are you sure you want to completely remove ${item.name}?`)) {
                             dashboardData.inventoryItems.splice(index, 1);
                             logActivity('text', { text: `Removed item: ${item.name}` });
-                            localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                            saveDashboardToSupabase();
                             document.getElementById('inventory-details').style.display = 'none';
                             renderInventoryView();
                         }
@@ -1621,7 +1663,7 @@
                         };
                         dashboardData.inventoryItems.push(newItem);
                         logActivity('text', { text: `Added new item: ${newItem.name}` });
-                        localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                        saveDashboardToSupabase();
                         renderInventoryView(); // refresh the view
                         
                         // Auto-select the newly added item
@@ -1659,7 +1701,7 @@
                     if (clsName && clsName.trim() !== '') {
                         item.classifications.push({ name: clsName.trim(), quantity: 0 });
                         logActivity('text', { text: `Added classification '${clsName.trim()}' to ${item.name}` });
-                        localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                        saveDashboardToSupabase();
                         renderClassifications(itemIndex); // refresh the list
                     }
                 };
@@ -1701,7 +1743,7 @@
                         if (confirm(`Remove classification: ${cls.name}?`)) {
                             dashboardData.inventoryItems[itemIndex].classifications.splice(classIdx, 1);
                             logActivity('text', { text: `Removed classification '${cls.name}' from ${item.name}` });
-                            localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                            saveDashboardToSupabase();
                             
                             // update total on card before re-rendering list
                             const newTotal = getCardTotal(item);
@@ -1757,7 +1799,7 @@
                         }
                         
                         // save
-                        localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                        saveDashboardToSupabase();
                     };
 
                     pill.addEventListener('change', (e) => {
@@ -1780,7 +1822,7 @@
             // --- Orders Logic ---
             if (!dashboardData.orders) {
                 dashboardData.orders = [];
-                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                saveDashboardToSupabase();
             }
 
             const cleanupExpiredShippedOrders = () => {
@@ -1812,7 +1854,7 @@
                 });
                 
                 if (ordersChanged) {
-                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    saveDashboardToSupabase();
                     if (typeof renderReportsView === 'function') renderReportsView();
                 }
             };
@@ -1934,7 +1976,7 @@
                             }
                             
                             if (hasData) {
-                                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                                saveDashboardToSupabase();
                                 renderReportsView();
                             } else {
                                 alert('There is no delivery data to clear.');
@@ -1949,7 +1991,7 @@
                         if (dashboardData.orders && dashboardData.orders.length > 0) {
                             if (confirm('Are you sure you want to completely clear all order history and data in the reports? This will permanently delete all active, shipped, and delivered orders.')) {
                                 dashboardData.orders = [];
-                                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                                saveDashboardToSupabase();
                                 renderReportsView();
                                 renderOrdersView();
                                 renderShippedOrders();
@@ -2105,7 +2147,7 @@
                     });
                     if (dashboardData.notifications.length > 20) dashboardData.notifications.length = 20;
                     
-                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    saveDashboardToSupabase();
                     renderReportsView();
                     renderShippedOrders();
                     renderOrdersView();
@@ -2159,7 +2201,7 @@
                     logActivity('text', {text: `Shipped ${order.quantity} ${order.classification} ${order.itemName}(s) to ${order.customerName}`});
                     
                     // Save & re-render
-                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    saveDashboardToSupabase();
                     renderOrdersView();
                     if (typeof renderReportsView === 'function') renderReportsView();
                     loadDashboardView();
@@ -2239,7 +2281,7 @@
                 order.mop = mop;
                 order.deadline = deadline;
                 
-                localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                saveDashboardToSupabase();
                 renderOrdersView();
             };
 
@@ -2252,7 +2294,7 @@
                         dashboardData.activeOrders = Math.max(0, (dashboardData.activeOrders || 0) - 1);
                     }
                     
-                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    saveDashboardToSupabase();
                     renderOrdersView();
                     loadDashboardView(); 
                 }
@@ -2330,7 +2372,7 @@
                     
                     dashboardData.activeOrders = (dashboardData.activeOrders || 0) + 1;
                     
-                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    saveDashboardToSupabase();
                     renderOrdersView();
                     loadDashboardView();
                 });
@@ -2442,7 +2484,7 @@
                     
                     dashboardData.orders.splice(orderIndex, 1);
                     
-                    localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                    saveDashboardToSupabase();
                     renderShippedOrders();
                     renderOrdersView();
                     if (typeof renderReportsView === 'function') renderReportsView();
@@ -2538,7 +2580,7 @@
                         const hashes = Array.from(document.querySelectorAll('.alert-item')).map(el => el.getAttribute('data-hash'));
                         if (hashes.length > 0) {
                             dashboardData.readAlerts = hashes;
-                            localStorage.setItem(`trackcap_dashboard_${currentUser}`, JSON.stringify(dashboardData));
+                            saveDashboardToSupabase();
                         }
                         const dot = document.getElementById('nav-notification-dot');
                         if (dot) dot.style.display = 'none';
@@ -2598,7 +2640,7 @@
                     }
                 });
             }
-        }
+        })();
     </script>
 </body>
 </html>

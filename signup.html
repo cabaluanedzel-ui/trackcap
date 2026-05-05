@@ -177,10 +177,9 @@
             color: white;
             z-index: 10;
         }
-
-
-
     </style>
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -331,43 +330,64 @@
     </div>
 
     <script>
-        document.getElementById('signupForm').addEventListener('submit', function(e) {
+        // Initialize Supabase
+        const supabaseUrl = 'https://ttsrfwgbqwtofujwcqas.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0c3Jmd2dicXd0b2Z1andjcWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NTg3MzEsImV4cCI6MjA5MzUzNDczMX0.dcXRwnEUJvfeoKq8kvpgjJxVZz_-wdUEFdKF08jQqyE';
+        
+        if (!window.supabase) {
+            alert("Error: Supabase library failed to load. Please check your internet connection.");
+        }
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const confirmPassword = document.getElementById('confirmPassword').value.trim();
-            const securityQuestion = document.getElementById('securityQuestion').value;
-            const securityAnswer = document.getElementById('securityAnswer').value.trim().toLowerCase(); // Store answers in lowercase for easy validation
+            try {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                const confirmPassword = document.getElementById('confirmPassword').value.trim();
+                const securityQuestion = document.getElementById('securityQuestion').value;
+                const securityAnswer = document.getElementById('securityAnswer').value.trim().toLowerCase();
 
-            if (password !== confirmPassword) {
-                alert('Passwords do not match! Please make sure both password fields are identical.');
-                return;
-            }
-
-            if (username && password && securityQuestion && securityAnswer) {
-                let users = JSON.parse(localStorage.getItem('trackcap_users') || '[]');
-                
-                // Check if username already exists
-                if (users.find(u => u.username === username)) {
-                    alert('Username already exists! Please choose another one.');
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match! Please make sure both password fields are identical.');
                     return;
                 }
 
-                users.push({ username, password, securityQuestion, securityAnswer });
-                localStorage.setItem('trackcap_users', JSON.stringify(users));
-                
-                // Generate completely empty dashboard data for this new account
-                const dashboardData = {
-                    totalInventory: 0,
-                    lowStocks: 0,
-                    activeOrders: 0,
-                    activity: [],
-                    inventoryItems: []
-                };
-                localStorage.setItem(`trackcap_dashboard_${username}`, JSON.stringify(dashboardData));
+                if (username && password && securityQuestion && securityAnswer) {
+                    // Check if username already exists in Supabase
+                    const { data: existingUser, error: fetchError } = await supabaseClient
+                        .from('users')
+                        .select('username')
+                        .eq('username', username)
+                        .maybeSingle();
 
-                alert('Account created successfully! Please login with your new credentials.');
-                window.location.href = 'index.html';
+                    if (existingUser) {
+                        alert('Username already exists! Please choose another one.');
+                        return;
+                    }
+
+                    // Insert new user into Supabase
+                    const { data, error } = await supabaseClient
+                        .from('users')
+                        .insert([
+                            { 
+                                username: username, 
+                                password: password, 
+                                security_question: securityQuestion, 
+                                security_answer: securityAnswer 
+                            }
+                        ]);
+
+                    if (error) {
+                        alert('Database Error: ' + error.message);
+                        return;
+                    }
+                    
+                    alert('Account created successfully! Please login with your new credentials.');
+                    window.location.href = 'index.html';
+                }
+            } catch (err) {
+                alert('An unexpected error occurred: ' + err.message);
             }
         });
 

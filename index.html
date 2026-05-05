@@ -176,10 +176,9 @@
             color: white;
             z-index: 10;
         }
-
-
-
     </style>
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -346,28 +345,45 @@
     </div>
 
     <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://ttsrfwgbqwtofujwcqas.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0c3Jmd2dicXd0b2Z1andjcWFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NTg3MzEsImV4cCI6MjA5MzUzNDczMX0.dcXRwnEUJvfeoKq8kvpgjJxVZz_-wdUEFdKF08jQqyE';
+        
+        if (!window.supabase) {
+            alert("Error: Supabase library failed to load.");
+        }
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         // Form Elements
         const loginForm = document.getElementById('loginForm');
         const recoveryFormUsername = document.getElementById('recoveryFormUsername');
         const recoveryFormQuestion = document.getElementById('recoveryFormQuestion');
         const recoveryFormNewPassword = document.getElementById('recoveryFormNewPassword');
         
-        let recoveringUserIndex = -1;
+        let recoveringUser = null;
 
         // Standard Login
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
+            try {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
 
-            let users = JSON.parse(localStorage.getItem('trackcap_users') || '[]');
-            const user = users.find(u => u.username === username && u.password === password);
-            
-            if (user) {
-                sessionStorage.setItem('currentUser', username);
-                window.location.href = 'dashboard.html';
-            } else {
-                alert('Invalid username or password. Please try again or create an account!');
+                const { data: user, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('username', username)
+                    .eq('password', password)
+                    .maybeSingle();
+                
+                if (user) {
+                    sessionStorage.setItem('currentUser', username);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('Invalid username or password. Please try again or create an account!');
+                }
+            } catch (err) {
+                alert('An unexpected error occurred: ' + err.message);
             }
         });
 
@@ -391,24 +407,31 @@
         });
 
         // Recovery Step 1: Verify Username
-        recoveryFormUsername.addEventListener('submit', function(e) {
+        recoveryFormUsername.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const username = document.getElementById('recoverUsername').value.trim();
-            let users = JSON.parse(localStorage.getItem('trackcap_users') || '[]');
-            
-            recoveringUserIndex = users.findIndex(u => u.username === username);
-            
-            if (recoveringUserIndex !== -1) {
-                const user = users[recoveringUserIndex];
-                if (!user.securityQuestion) {
-                    alert('This account was created before security questions were introduced. You cannot recover this password.');
-                    return;
+            try {
+                const username = document.getElementById('recoverUsername').value.trim();
+                
+                const { data: user, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('username', username)
+                    .maybeSingle();
+                
+                if (user) {
+                    if (!user.security_question) {
+                        alert('This account was created before security questions were introduced. You cannot recover this password.');
+                        return;
+                    }
+                    recoveringUser = user;
+                    document.getElementById('displaySecurityQuestion').textContent = user.security_question;
+                    recoveryFormUsername.style.display = 'none';
+                    recoveryFormQuestion.style.display = 'flex';
+                } else {
+                    alert('Username not found. Please check your spelling.');
                 }
-                document.getElementById('displaySecurityQuestion').textContent = user.securityQuestion;
-                recoveryFormUsername.style.display = 'none';
-                recoveryFormQuestion.style.display = 'flex';
-            } else {
-                alert('Username not found. Please check your spelling.');
+            } catch (err) {
+                alert('Error: ' + err.message);
             }
         });
 
@@ -416,10 +439,8 @@
         recoveryFormQuestion.addEventListener('submit', function(e) {
             e.preventDefault();
             const answer = document.getElementById('recoverAnswer').value.trim().toLowerCase();
-            let users = JSON.parse(localStorage.getItem('trackcap_users') || '[]');
-            const user = users[recoveringUserIndex];
             
-            if (user.securityAnswer === answer) {
+            if (recoveringUser.security_answer === answer) {
                 recoveryFormQuestion.style.display = 'none';
                 recoveryFormNewPassword.style.display = 'flex';
             } else {
@@ -428,7 +449,7 @@
         });
 
         // Recovery Step 3: Set New Password
-        recoveryFormNewPassword.addEventListener('submit', function(e) {
+        recoveryFormNewPassword.addEventListener('submit', async function(e) {
             e.preventDefault();
             const newPassword = document.getElementById('newPassword').value.trim();
             const confirmNewPassword = document.getElementById('confirmNewPassword').value.trim();
@@ -443,20 +464,30 @@
                 return;
             }
 
-            let users = JSON.parse(localStorage.getItem('trackcap_users') || '[]');
-            users[recoveringUserIndex].password = newPassword;
-            localStorage.setItem('trackcap_users', JSON.stringify(users));
-            
-            alert('Password reset successfully! You can now log in with your new password.');
-            
-            // Reset state
-            document.getElementById('loginForm').reset();
-            document.getElementById('recoveryFormUsername').reset();
-            document.getElementById('recoveryFormQuestion').reset();
-            document.getElementById('recoveryFormNewPassword').reset();
-            
-            recoveryFormNewPassword.style.display = 'none';
-            loginForm.style.display = 'flex';
+            try {
+                const { error } = await supabaseClient
+                    .from('users')
+                    .update({ password: newPassword })
+                    .eq('id', recoveringUser.id);
+                
+                if (error) {
+                    alert('Failed to update password. Please try again.');
+                    return;
+                }
+                
+                alert('Password reset successfully! You can now log in with your new password.');
+                
+                // Reset state
+                document.getElementById('loginForm').reset();
+                document.getElementById('recoveryFormUsername').reset();
+                document.getElementById('recoveryFormQuestion').reset();
+                document.getElementById('recoveryFormNewPassword').reset();
+                
+                recoveryFormNewPassword.style.display = 'none';
+                loginForm.style.display = 'flex';
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
         });
 
         // About Modal Logic
