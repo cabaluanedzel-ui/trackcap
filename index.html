@@ -166,6 +166,50 @@
             text-decoration: underline;
         }
 
+        /* Role Toggle */
+        .role-toggle-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .role-toggle-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .role-toggle {
+            display: flex;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 4px;
+            gap: 4px;
+            border: 1.5px solid rgba(255,255,255,0.2);
+        }
+
+        .role-btn {
+            padding: 8px 22px;
+            border-radius: 20px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: transparent;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .role-btn.active {
+            background: #fbe696;
+            color: #0d1b7a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
         /* Decorative Elements */
         .bottom-left-number {
             position: absolute;
@@ -198,11 +242,20 @@
         </div>
 
         <form class="login-form" id="loginForm">
+            <!-- Role Toggle -->
+            <div class="role-toggle-wrapper">
+                <span class="role-toggle-label">Login as</span>
+                <div class="role-toggle">
+                    <button type="button" class="role-btn active" id="role-btn-admin" onclick="selectRole('admin')">Admin</button>
+                    <button type="button" class="role-btn" id="role-btn-user" onclick="selectRole('user')">User</button>
+                </div>
+            </div>
+            <input type="hidden" id="selected-role" value="admin">
             <input type="text" class="input-field" id="username" placeholder="User name" required>
             <input type="password" class="input-field" id="password" placeholder="Password" required>
             <a href="#" class="reset-password" id="btn-show-recovery">Forgot password?</a>
             <button type="submit" class="enter-btn">Enter</button>
-            <a href="signup.html" class="signup-link">Don't have an account? <span>Sign up</span></a>
+            <a href="signup.html" class="signup-link" id="signup-link-row">Don't have an account? <span>Sign up</span></a>
         </form>
 
         <!-- Recovery Step 1: Username -->
@@ -354,6 +407,15 @@
         }
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        // Role toggle logic
+        function selectRole(role) {
+            document.getElementById('selected-role').value = role;
+            document.getElementById('role-btn-admin').classList.toggle('active', role === 'admin');
+            document.getElementById('role-btn-user').classList.toggle('active', role === 'user');
+            // Hide sign up link for user role (users are created by admin)
+            document.getElementById('signup-link-row').style.display = role === 'user' ? 'none' : '';
+        }
+
         // Form Elements
         const loginForm = document.getElementById('loginForm');
         const recoveryFormUsername = document.getElementById('recoveryFormUsername');
@@ -368,6 +430,7 @@
             try {
                 const username = document.getElementById('username').value.trim();
                 const password = document.getElementById('password').value.trim();
+                const selectedRole = document.getElementById('selected-role').value;
 
                 const { data: user, error } = await supabaseClient
                     .from('users')
@@ -377,7 +440,21 @@
                     .maybeSingle();
                 
                 if (user) {
+                    const actualRole = user.role || 'user';
+                    // Validate role matches selection
+                    if (actualRole !== selectedRole) {
+                        alert(`This account is registered as "${actualRole}". Please select the correct role.`);
+                        return;
+                    }
                     sessionStorage.setItem('currentUser', username);
+                    sessionStorage.setItem('isAdmin', actualRole === 'admin' ? 'true' : 'false');
+                    // For users, find and store their admin's username so we can load shared data
+                    if (actualRole === 'user') {
+                        const adminOwner = user.created_by || null;
+                        sessionStorage.setItem('adminOwner', adminOwner || '');
+                    } else {
+                        sessionStorage.setItem('adminOwner', username); // admin owns their own data
+                    }
                     window.location.href = 'dashboard.html';
                 } else {
                     alert('Invalid username or password. Please try again or create an account!');

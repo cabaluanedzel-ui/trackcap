@@ -212,7 +212,11 @@
             </select>
             <input type="text" class="input-field" id="securityAnswer" placeholder="Security Answer" required>
             
-            <button type="submit" class="enter-btn" style="margin-top: 15px;">Create Account</button>
+            <div style="background: rgba(251,230,150,0.15); border: 1px solid rgba(251,230,150,0.4); border-radius: 10px; padding: 8px 14px; text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: -5px;">
+                ⭐ This creates an <strong style="color:#fbe696;">Admin</strong> account. Users are created from the Admin panel.
+            </div>
+            
+            <button type="submit" class="enter-btn" style="margin-top: 5px;">Create Admin Account</button>
             <a href="index.html" class="signup-link">Already have an account? <span>Login</span></a>
         </form>
     </div>
@@ -366,7 +370,7 @@
                         return;
                     }
 
-                    // Insert new user into Supabase
+                    // Insert new user into Supabase — signup always creates admin accounts
                     const { data, error } = await supabaseClient
                         .from('users')
                         .insert([
@@ -374,7 +378,8 @@
                                 username: username, 
                                 password: password, 
                                 security_question: securityQuestion, 
-                                security_answer: securityAnswer 
+                                security_answer: securityAnswer,
+                                role: 'admin'
                             }
                         ]);
 
